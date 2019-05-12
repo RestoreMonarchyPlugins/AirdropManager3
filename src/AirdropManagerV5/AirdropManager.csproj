@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net461</TargetFramework>
+    <PackageId>AirdropManager</PackageId>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>AirdropManager RocketMod MCrow RestoreMonarchy</PackageTags>
+    <PackageLicenseUrl>https://github.com/RestoreMonarchy/AirdropManager/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://restoremonarchy.com</PackageProjectUrl>
+    <PackageAuthors>Michael Crow (MCrow)</PackageAuthors>
+    <PackageOwners>Michael Crow</PackageOwners>	
+    <Authors>Michael Crow (MCrow)</Authors>
+    <Company>Restore Monarchy</Company>
+    <Copyright>2019 © Restore Monarchy</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>Restore Monarchy Plugin</Description>
+    <Version>1.0.0.0</Version>
+    <Product>AirdropManager</Product>
+    <RootNamespace>RestoreMonarchy.AirdropManager</RootNamespace>
+    <AssemblyName>AirdropManager</AssemblyName>
+    <RepositoryUrl>https://github.com/RestoreMonarchyPlugins/AirdropManager</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Rocket.Core" Version="5.0.0.669" />
+    <PackageReference Include="Rocket.Unturned" Version="5.0.0.250" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\lib\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>..\lib\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\lib\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\lib\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
