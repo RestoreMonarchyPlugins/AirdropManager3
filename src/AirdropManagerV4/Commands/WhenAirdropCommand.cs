@@ -17,7 +17,7 @@ namespace RestoreMonarchy.AirdropManager.Commands
         {
             TimeSpan timeLeft = TimeSpan.FromTicks(AirdropManagerPlugin.Instance.AirdropTimerNext.Subtract(DateTime.Now).Ticks);           
 
-            UnturnedChat.Say(caller, $"Next airdrop will be in {FormatingHelper.ToPrettyFormat(timeLeft)}", Color.green);
+            UnturnedChat.Say(caller, AirdropManagerPlugin.Instance.Translations.Instance.Translate("Next_Airdrop", FormatingHelper.ToPrettyFormat(timeLeft)), Color.green);
         }
 
         public string Help

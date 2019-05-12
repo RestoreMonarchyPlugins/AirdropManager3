@@ -19,6 +19,16 @@ namespace RestoreMonarchy.AirdropManager
         public Timer AirdropTimer { get; set; }
         public DateTime AirdropTimerNext { get; set; }
 
+        public override TranslationList DefaultTranslations
+        {
+            get
+            {
+                return new TranslationList(){
+                    {"Next_Airdrop","Next airdrop will be in {0}"}
+                };
+            }
+        }
+
         protected override void Load()
         {
             AirdropTimer = new Timer(Configuration.Instance.AirdropInterval * 1000);
