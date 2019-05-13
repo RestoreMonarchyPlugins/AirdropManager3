@@ -1,11 +1,6 @@
 # AirdropManager - RocketMod4 Plugin
 
-## Commands
-* /airdrop - Calls in an airdrop
-* /whenairdrop - Shows time left to next airdrop
-* /setairdrop \<airdrop id\> - Saves you current position as airdrop target
-
-## Configuration
+### Configuration
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -44,9 +39,8 @@
 </AirdropManagerConfiguration>
 ```
 
-## Translation
+### Translation
 
-**RocketMod 4**
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <Translations xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
