@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using UnityEngine;
 
 namespace RestoreMonarchy.AirdropManager
@@ -34,6 +35,7 @@ namespace RestoreMonarchy.AirdropManager
 
     public class Airdrop
     {
+        [XmlAttribute("AirdropId")]
         public ushort AirdropId { get; set; }
         public List<AirdropItem> Items { get; set; }
     }
@@ -46,13 +48,15 @@ namespace RestoreMonarchy.AirdropManager
             this.ItemId = itemId;
             this.Chance = chance;
         }
-
+        [XmlAttribute("ItemId")]
         public ushort ItemId { get; set; }
+        [XmlAttribute("Chance")]
         public int Chance { get; set; }
     }
 
     public class AirdropSpawn
     {
+        [XmlAttribute("AirdropId")]
         public ushort AirdropId { get; set; }
         public Position Position { get; set; }
     }
@@ -72,8 +76,11 @@ namespace RestoreMonarchy.AirdropManager
             return new Vector3(X, Y, Z);
         }
 
+        [XmlAttribute("X")]
         public float X { get; set; }
+        [XmlAttribute("Y")]
         public float Y { get; set; }
+        [XmlAttribute("Z")]
         public float Z { get; set; }
     }
 }
