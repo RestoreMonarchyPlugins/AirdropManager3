@@ -1,3 +1,4 @@
+[![Version](https://img.shields.io/github/release/RestoreMonarchyPlugins/AirdropManager.svg)](https://github.com/RestoreMonarchyPlugins/AirdropManager/releases) ![Discord](https://discordapp.com/api/guilds/520355060312440853/widget.png)
 # AirdropManager - RocketMod4 Plugin
 
 ### Configuration
