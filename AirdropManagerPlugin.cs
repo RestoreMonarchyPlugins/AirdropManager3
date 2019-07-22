@@ -1,15 +1,12 @@
-﻿using Rocket.API;
-using Rocket.API.Collections;
+﻿using Rocket.API.Collections;
 using Rocket.Core.Plugins;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Timers;
-using System.Threading.Tasks;
 using UnityEngine;
 using SDG.Unturned;
 using Logger = Rocket.Core.Logging.Logger;
+using System.Reflection;
 
 namespace RestoreMonarchy.AirdropManager
 {
@@ -17,7 +14,7 @@ namespace RestoreMonarchy.AirdropManager
     {
         public static AirdropManagerPlugin Instance { get; set; }
         public Timer AirdropTimer { get; set; }
-        public DateTime AirdropTimerNext { get; set; }
+        public DateTime AirdropTimerNext { get; set; }  
 
         public override TranslationList DefaultTranslations
         {
@@ -35,7 +32,7 @@ namespace RestoreMonarchy.AirdropManager
             AirdropTimer.Start();
             AirdropTimerNext = DateTime.Now.AddSeconds(Configuration.Instance.AirdropInterval);
             AirdropTimer.Elapsed += AirdropTimer_Elapsed;
-            Logger.Log($"Timer started. Next airdrop {AirdropTimerNext.ToShortDateString()}");
+            Logger.Log($"Timer started. Next airdrop {AirdropTimerNext.ToShortTimeString()}");
 
             Logger.Log($"Creating your {Configuration.Instance.Airdrops.Count} airdrops...");
 
@@ -48,13 +45,13 @@ namespace RestoreMonarchy.AirdropManager
 
                 foreach (AirdropItem item in airdrop.Items)
                 {
-                    asset.tables.Add(new SpawnTable() { assetID = item.ItemId, weight = item.Chance, chance = item.Chance });
+                    asset.tables.Add(new SpawnTable() { assetID = item.ItemId, weight = item.Chance });
                 }
 
                 Assets.add(asset, true);
             }
 
-            Level.onLevelLoaded = (LevelLoaded)Delegate.Combine(Level.onLevelLoaded, new LevelLoaded(this.OnLevelLoaded));
+            Level.onLevelLoaded += OnLevelLoaded;
 
             Instance = this;
             Logger.Log($"AirdropManager has been loaded!");
@@ -71,64 +68,42 @@ namespace RestoreMonarchy.AirdropManager
 
         public void CallAirdrop()
         {
-            System.Random random = new System.Random();
-            List<AirdropNode> list = new List<AirdropNode>();
-            if (Configuration.Instance.UseDefaultSpawns)
-            {
-                foreach (Node node in LevelNodes.nodes)
-                {
-                    if (node.type == ENodeType.AIRDROP)
-                    {
-                        AirdropNode airdropNode = (AirdropNode)node;
-                        list.Add(airdropNode);
-                    }
-                }
-                int num = random.Next(list.Count);
-                ushort airdropId = list[num].id;
-                if (!Configuration.Instance.UseDefaultAirdrops)
-                {
-                    if (Configuration.Instance.Airdrops.Count == 0)
-                    {
-                        Logger.LogWarning("There isn't any custom airdrop, airdrop canceled.");
-                        return;
-                    }
-                    airdropId = Configuration.Instance.Airdrops[random.Next(Configuration.Instance.Airdrops.Count)].AirdropId;
-                }
-                LevelManager.airdrop(list[num].point, airdropId, 100);
-            }
-            else
-            {
-                if (Configuration.Instance.AirdropSpawns.Count == 0)
-                {
-                    Logger.LogWarning("There isn't any airdrop spawn, airdrop canceled.");
-                    return;
-                }
-
-                int num = random.Next(Configuration.Instance.AirdropSpawns.Count);
-
-                LevelManager.airdrop(Configuration.Instance.AirdropSpawns[num].Position.ToVector(),
-                    Configuration.Instance.AirdropSpawns[num].AirdropId, 100);
-            }
-            ChatManager.serverSendMessage(Configuration.Instance.AirdropMessage.Replace('{', '<').Replace('}', '>'), Color.white, null, null, EChatMode.SAY, Configuration.Instance.AirdropMessageIcon, true);
+            LevelManager.airdropFrequency = 0u;
+            ChatManager.serverSendMessage(Configuration.Instance.AirdropMessage.Replace('{', '<').Replace('}', '>'), Color.white, null, null, 
+                EChatMode.SAY, Configuration.Instance.AirdropMessageIcon, true);
         }
 
         public void OnLevelLoaded(int level)
         {
             Logger.Log($"Creating your {Configuration.Instance.AirdropSpawns.Count} airdrop spawns...");
+            
+            var field = typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic);
+            List<AirdropNode> airdropNodes = field.GetValue(null) as List<AirdropNode>;
+
+            if (!Configuration.Instance.UseDefaultSpawns)
+            {
+                airdropNodes = new List<AirdropNode>();
+
+                if (!Configuration.Instance.UseDefaultAirdrops)
+                {
+                    List<AirdropNode> nodes = new List<AirdropNode>();
+                    foreach (var airdropNode in airdropNodes)
+                    {                        
+                        nodes.Add(new AirdropNode(airdropNode.point));
+                    }
+                    airdropNodes = nodes;
+                }
+            }
 
             foreach (AirdropSpawn spawn in Configuration.Instance.AirdropSpawns)
             {
-                AirdropNode airdropNode;
                 if (spawn.AirdropId == 0)
-                {
-                    airdropNode = new AirdropNode(spawn.Position.ToVector());
-                }
+                    airdropNodes.Add(new AirdropNode(spawn.Position.ToVector()));
                 else
-                {
-                    airdropNode = new AirdropNode(spawn.Position.ToVector(), spawn.AirdropId);
-                }
-                LevelNodes.nodes.Add(airdropNode);
+                    airdropNodes.Add(new AirdropNode(spawn.Position.ToVector(), spawn.AirdropId));               
             }
+
+            field.SetValue(null, airdropNodes);
         }
     }
 }
