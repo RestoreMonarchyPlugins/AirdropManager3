@@ -29,9 +29,11 @@ namespace RestoreMonarchy.AirdropManager
         protected override void Load()
         {
             AirdropTimer = new Timer(Configuration.Instance.AirdropInterval * 1000);
-            AirdropTimer.Start();
-            AirdropTimerNext = DateTime.Now.AddSeconds(Configuration.Instance.AirdropInterval);
             AirdropTimer.Elapsed += AirdropTimer_Elapsed;
+            AirdropTimer.AutoReset = true;
+
+            AirdropTimerNext = DateTime.Now.AddSeconds(Configuration.Instance.AirdropInterval);
+            AirdropTimer.Start();
             Logger.Log($"Timer started. Next airdrop {AirdropTimerNext.ToShortTimeString()}");
 
             Logger.Log($"Creating your {Configuration.Instance.Airdrops.Count} airdrops...");
@@ -56,13 +58,12 @@ namespace RestoreMonarchy.AirdropManager
             Instance = this;
             Logger.Log($"AirdropManager has been loaded!");
             Logger.Log($"Version: 2.0");
-            Logger.Log($"Made by MCrow");
+            Logger.Log($"Made by RestoreMonarchy.com");
         }
 
         private void AirdropTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             CallAirdrop();
-            AirdropTimer.Start();
             AirdropTimerNext = DateTime.Now.AddSeconds(Configuration.Instance.AirdropInterval);
         }
 
@@ -80,19 +81,19 @@ namespace RestoreMonarchy.AirdropManager
             var field = typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic);
             List<AirdropNode> airdropNodes = field.GetValue(null) as List<AirdropNode>;
 
+            if (!Configuration.Instance.UseDefaultAirdrops)
+            {
+                List<AirdropNode> nodes = new List<AirdropNode>();
+                foreach (var airdropNode in airdropNodes)
+                {
+                    nodes.Add(new AirdropNode(airdropNode.point));
+                }
+                airdropNodes = nodes;
+            }
+
             if (!Configuration.Instance.UseDefaultSpawns)
             {
                 airdropNodes = new List<AirdropNode>();
-
-                if (!Configuration.Instance.UseDefaultAirdrops)
-                {
-                    List<AirdropNode> nodes = new List<AirdropNode>();
-                    foreach (var airdropNode in airdropNodes)
-                    {                        
-                        nodes.Add(new AirdropNode(airdropNode.point));
-                    }
-                    airdropNodes = nodes;
-                }
             }
 
             foreach (AirdropSpawn spawn in Configuration.Instance.AirdropSpawns)
