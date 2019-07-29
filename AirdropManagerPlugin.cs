@@ -6,6 +6,7 @@ using System.Timers;
 using UnityEngine;
 using SDG.Unturned;
 using Logger = Rocket.Core.Logging.Logger;
+using Random = System.Random;
 using System.Reflection;
 
 namespace RestoreMonarchy.AirdropManager
@@ -79,19 +80,19 @@ namespace RestoreMonarchy.AirdropManager
             Logger.Log($"Creating your {Configuration.Instance.AirdropSpawns.Count} airdrop spawns...");
             
             var field = typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic);
-            List<AirdropNode> airdropNodes = field.GetValue(null) as List<AirdropNode>;
+            List<AirdropNode> airdropNodes = field.GetValue(null) as List<AirdropNode>;            
 
-            if (!Configuration.Instance.UseDefaultAirdrops)
+            if (Configuration.Instance.UseDefaultSpawns)
             {
-                List<AirdropNode> nodes = new List<AirdropNode>();
-                foreach (var airdropNode in airdropNodes)
+                if (!Configuration.Instance.UseDefaultAirdrops)
                 {
-                    nodes.Add(new AirdropNode(airdropNode.point));
+                    Random random = new Random();                    
+                    foreach (AirdropNode airdropNode in airdropNodes)
+                    {                        
+                        airdropNode.id = Configuration.Instance.Airdrops[random.Next(Configuration.Instance.Airdrops.Count)].AirdropId;
+                    }
                 }
-                airdropNodes = nodes;
-            }
-
-            if (!Configuration.Instance.UseDefaultSpawns)
+            } else
             {
                 airdropNodes = new List<AirdropNode>();
             }
