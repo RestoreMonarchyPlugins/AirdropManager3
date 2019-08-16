@@ -78,7 +78,6 @@
   <ItemGroup>
     <Compile Include="AirdropManagerConfiguration.cs" />
     <Compile Include="AirdropManagerPlugin.cs" />
-    <Compile Include="Extensions\VectorHelper.cs" />
     <Compile Include="Models\Airdrop.cs" />
     <Compile Include="Models\CustomAirdrop.cs" />
     <Compile Include="Patches\Carepackage_OnCollisionEnter_Patch.cs" />
