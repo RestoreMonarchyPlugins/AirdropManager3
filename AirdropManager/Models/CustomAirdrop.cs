@@ -5,14 +5,36 @@ namespace RestoreMonarchy.AirdropManager.Models
 {
     public class CustomAirdrop
     {
-        // I'll use this type in future to compute how much space in storage is needed to store all items in it
 
         public Airdrop Airdrop { get; private set; }
 
         public CustomAirdrop()
-        {
+        {            
             List<Airdrop> airdrops = AirdropManagerPlugin.Instance.Configuration.Instance.Airdrops;
-            Airdrop = airdrops[Random.Range(0, airdrops.Count - 1)];
+
+            if (airdrops.Count < 1)
+                Airdrop = null;
+            else
+            {
+                int value = 0;
+                foreach (var airdrop in airdrops)
+                {
+                    value += airdrop.Chance;
+                }
+
+                int result = Random.Range(0, value);
+                value = 0;
+                foreach (var airdrop in airdrops)
+                {
+                    int previousValue = value;
+                    value += airdrop.Chance;
+                    if (result >= previousValue && result <= value)
+                    {
+                        Airdrop = airdrop;
+                        break;
+                    }
+                }
+            }
         }
     }
 }

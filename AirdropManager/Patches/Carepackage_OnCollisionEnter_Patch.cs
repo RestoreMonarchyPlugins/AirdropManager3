@@ -1,6 +1,5 @@
 ﻿using Harmony;
 using RestoreMonarchy.AirdropManager.Models;
-using Rocket.Unturned.Chat;
 using SDG.Unturned;
 using UnityEngine;
 
@@ -10,16 +9,19 @@ namespace RestoreMonarchy.AirdropManager.Patches
     class Carepackage_OnCollisionEnter_Patch
     {
         [HarmonyPrefix]
-        public static void OnCollisionEnter(Carepackage __instance, Collision collision)
+        public static bool OnCollisionEnter(Carepackage __instance, Collision collision)
         {
-            var isExploded = Traverse.Create(__instance).Field("isExploded");
+            CustomAirdrop custom = new CustomAirdrop();
+            if (custom.Airdrop == null)
+                return true;
 
+            var isExploded = Traverse.Create(__instance).Field("isExploded");
             if (isExploded.GetValue<bool>() || collision.collider.isTrigger)
             {
-                return;
+                return false;
             }
-
             isExploded.SetValue(true);
+
             if (Provider.isServer)
             {
                 Transform transform = BarricadeManager.dropBarricade(new Barricade(1374), null, __instance.transform.position, 0f, 0f, 0f, 0UL, 0UL);
@@ -29,8 +31,6 @@ namespace RestoreMonarchy.AirdropManager.Patches
                     component.despawnWhenDestroyed = true;
                     if (component != null && component.items != null)
                     {
-                        CustomAirdrop custom = new CustomAirdrop();
-
                         foreach (ushort itemId in custom.Airdrop.Items)
                         {
                             if (!component.items.tryAddItem(new Item(itemId, EItemOrigin.ADMIN), false))
@@ -42,12 +42,11 @@ namespace RestoreMonarchy.AirdropManager.Patches
                 }
 
                 transform.gameObject.AddComponent<CarepackageDestroy>();
-                EffectManager.sendEffectReliable(120, EffectManager.INSANE, __instance.transform.position);
-                
+                EffectManager.sendEffectReliable(120, EffectManager.INSANE, __instance.transform.position);                
             }
 
             Object.Destroy(__instance.gameObject);
-            return;
+            return false;
         }
     }
 }

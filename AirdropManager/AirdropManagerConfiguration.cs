@@ -18,6 +18,7 @@ namespace RestoreMonarchy.AirdropManager
                 new Airdrop()
                 {
                     Name = "Military",
+                    Chance = 10,
                     Items = new List<ushort>()
                     {
                         363,

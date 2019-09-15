@@ -8,7 +8,7 @@ namespace RestoreMonarchy.AirdropManager.Models
         [XmlAttribute]
         public string Name { get; set; }
         [XmlAttribute]
-        public double Chance { get; set; }
+        public int Chance { get; set; }
         [XmlArrayItem("id")]
         public List<ushort> Items { get; set; }
     }
