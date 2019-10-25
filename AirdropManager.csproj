@@ -69,9 +69,8 @@
     <Compile Include="Commands\SetAirdropCommand.cs" />
     <Compile Include="Commands\WhenAirdropCommand.cs" />
     <Compile Include="Helpers\FormatingHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

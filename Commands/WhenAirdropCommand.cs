@@ -1,12 +1,8 @@
 ﻿using RestoreMonarchy.AirdropManager.Helpers;
 using Rocket.API;
 using Rocket.Unturned.Chat;
-using SDG.Unturned;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RestoreMonarchy.AirdropManager.Commands
@@ -15,43 +11,20 @@ namespace RestoreMonarchy.AirdropManager.Commands
     {
         public void Execute(IRocketPlayer caller, params string[] command)
         {
-            TimeSpan timeLeft = TimeSpan.FromTicks(AirdropManagerPlugin.Instance.AirdropTimerNext.Subtract(DateTime.Now).Ticks);           
-
-            UnturnedChat.Say(caller, AirdropManagerPlugin.Instance.Translations.Instance.Translate("Next_Airdrop", FormatingHelper.ToPrettyFormat(timeLeft)), Color.green);
+            TimeSpan timeLeft = TimeSpan.FromSeconds(AirdropManagerPlugin.Instance.AirdropTimerNext.Subtract(DateTime.Now).TotalSeconds);
+            UnturnedChat.Say(caller, AirdropManagerPlugin.Instance.Translations.Instance.Translate("NextAirdrop", FormatingHelper.ToPrettyFormat(timeLeft)), Color.green);
         }
 
-        public string Help
-        {
-            get { return "Tells time left to next airdrop"; }
-        }
+        public string Help => "Displays time left to next airdrop";
 
-        public string Name
-        {
-            get { return "whenairdrop"; }
-        }
+        public string Name => "whenairdrop";
 
-        public string Syntax
-        {
-            get { return ""; }
-        }
+        public string Syntax => string.Empty;
 
-        public List<string> Aliases
-        {
-            get { return new List<string>() { }; }
-        }
+        public List<string> Aliases => new List<string>();
 
-        public List<string> Permissions
-        {
-            get
-            {
-                return new List<string>() { "whenairdrop" };
-            }
-        }
+        public List<string> Permissions => new List<string>();
 
-
-        public AllowedCaller AllowedCaller
-        {
-            get { return Rocket.API.AllowedCaller.Both; }
-        }
+        public AllowedCaller AllowedCaller => AllowedCaller.Both;
     }
 }

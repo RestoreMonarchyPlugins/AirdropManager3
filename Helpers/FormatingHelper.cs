@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RestoreMonarchy.AirdropManager.Helpers
 {
-    public class FormatingHelper
+    public static class FormatingHelper
     {
         public static string ToPrettyFormat(TimeSpan span)
         {
@@ -21,6 +21,11 @@ namespace RestoreMonarchy.AirdropManager.Helpers
                 sb.AppendFormat("{0} second{1} ", span.Seconds, span.Seconds > 1 ? "s" : String.Empty);
 
             return sb.ToString().TrimEnd(' ');
+        }
+
+        public static string ToRich(this string value)
+        {
+            return value.Replace('{', '<').Replace('}', '>');
         }
     }
 }

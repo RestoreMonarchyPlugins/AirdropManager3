@@ -7,9 +7,9 @@ namespace RestoreMonarchy.AirdropManager
 {
     public class AirdropManagerConfiguration : IRocketPluginConfiguration
     {
+        public string MessageColor { get; set; }
         public bool UseDefaultSpawns;
         public bool UseDefaultAirdrops;
-        public string AirdropMessage;
         public string AirdropMessageIcon;
         public double AirdropInterval;
         public List<Airdrop> Airdrops;
@@ -18,9 +18,9 @@ namespace RestoreMonarchy.AirdropManager
 
         public void LoadDefaults()
         {
+            MessageColor = "yellow";
             UseDefaultSpawns = true;
             UseDefaultAirdrops = false;
-            AirdropMessage = "{size=17}{color=magenta}{i}Airdrop{/i} is coming!{/color}{/size}";
             AirdropMessageIcon = "https://i.imgur.com/JCDmlqI.png";
             AirdropInterval = 3600;
             Airdrops = new List<Airdrop>() { new Airdrop() { AirdropId = 1005, Items = new List<AirdropItem>() { new AirdropItem(363, 10), new AirdropItem(17, 20) } } };
@@ -41,8 +41,8 @@ namespace RestoreMonarchy.AirdropManager
         public AirdropItem() { }
         public AirdropItem(ushort itemId, int chance)
         {
-            this.ItemId = itemId;
-            this.Chance = chance;
+            ItemId = itemId;
+            Chance = chance;
         }
         [XmlAttribute("ItemId")]
         public ushort ItemId { get; set; }

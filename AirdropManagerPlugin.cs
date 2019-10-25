@@ -8,6 +8,8 @@ using SDG.Unturned;
 using Logger = Rocket.Core.Logging.Logger;
 using Random = System.Random;
 using System.Reflection;
+using RestoreMonarchy.AirdropManager.Helpers;
+using Rocket.Unturned.Chat;
 
 namespace RestoreMonarchy.AirdropManager
 {
@@ -15,29 +17,30 @@ namespace RestoreMonarchy.AirdropManager
     {
         public static AirdropManagerPlugin Instance { get; set; }
         public Timer AirdropTimer { get; set; }
-        public DateTime AirdropTimerNext { get; set; }  
+        public DateTime AirdropTimerNext { get; set; }
+        public Color MessageColor { get; set; }
 
-        public override TranslationList DefaultTranslations
+        public override TranslationList DefaultTranslations =>  new TranslationList()
         {
-            get
-            {
-                return new TranslationList(){
-                    {"Next_Airdrop","Next airdrop will be in {0}"}
-                };
-            }
-        }
+            { "NextAirdrop", "Next airdrop will be in {0}" },
+            { "SuccessAirdrop", "Successfully called in airdrop!" },
+            { "SuccessMassAirdrop", "Successfully called in mass airdrop!" },            
+            { "Airdrop", "{size=17}{color=magenta}{i}Airdrop{/i} is coming!{/color}{/size}" },
+            { "MassAirdrop", "{size=17}{color=magenta}{i}Mass Airdrop{/i} is coming!{/color}{/size}" },
+            { "SetAirdropFormat", "Format: /setairdrop <AirdropID>" },
+            { "SetAirdropSuccess", "Successfully set an airdrop spawn at your position!" },
+            { "SetAirdropInvalid", "Invalid AirdropID" }
+        };
 
         protected override void Load()
         {
+            Instance = this;
+            MessageColor = UnturnedChat.GetColorFromName(Configuration.Instance.MessageColor, Color.green);
             AirdropTimer = new Timer(Configuration.Instance.AirdropInterval * 1000);
             AirdropTimer.Elapsed += AirdropTimer_Elapsed;
             AirdropTimer.AutoReset = true;
-
-            AirdropTimerNext = DateTime.Now.AddSeconds(Configuration.Instance.AirdropInterval);
             AirdropTimer.Start();
-            Logger.Log($"Timer started. Next airdrop {AirdropTimerNext.ToShortTimeString()}");
-
-            Logger.Log($"Creating your {Configuration.Instance.Airdrops.Count} airdrops...");
+            AirdropTimerNext = DateTime.Now.AddSeconds(Configuration.Instance.AirdropInterval);
 
             foreach (Airdrop airdrop in Configuration.Instance.Airdrops)
             {
@@ -45,21 +48,32 @@ namespace RestoreMonarchy.AirdropManager
                     continue;
 
                 SpawnAsset asset = new SpawnAsset(airdrop.AirdropId);
-
                 foreach (AirdropItem item in airdrop.Items)
                 {
-                    asset.tables.Add(new SpawnTable() { assetID = item.ItemId, weight = item.Chance });
+                    asset.tables.Add(new SpawnTable()
+                    {
+                        assetID = item.ItemId,
+                        weight = item.Chance,
+                        spawnID = 0,
+                        chance = 0
+                    });
                 }
 
+                asset.GetType().GetProperty("areTablesDirty", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).SetValue(asset, true);
                 Assets.add(asset, true);
             }
 
             Level.onLevelLoaded += OnLevelLoaded;
 
-            Instance = this;
-            Logger.Log($"AirdropManager has been loaded!");
-            Logger.Log($"Version: 2.0");
-            Logger.Log($"Made by RestoreMonarchy.com");
+            Logger.Log($"{Name} {Assembly.GetName().Version} has been loaded!", ConsoleColor.Yellow);
+            Logger.Log($"Brought to You by RestoreMonarchy.com", ConsoleColor.Yellow);
+        }
+
+        protected override void Unload()
+        {
+            Level.onLevelLoaded -= OnLevelLoaded;
+            AirdropTimer.Elapsed -= AirdropTimer_Elapsed;
+            Logger.Log($"{Name} has been unloaded!", ConsoleColor.Yellow);
         }
 
         private void AirdropTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -68,31 +82,41 @@ namespace RestoreMonarchy.AirdropManager
             AirdropTimerNext = DateTime.Now.AddSeconds(Configuration.Instance.AirdropInterval);
         }
 
-        public void CallAirdrop()
+        public void CallAirdrop(bool isMass = false)
         {
-            LevelManager.airdropFrequency = 0u;
-            ChatManager.serverSendMessage(Configuration.Instance.AirdropMessage.Replace('{', '<').Replace('}', '>'), Color.white, null, null, 
-                EChatMode.SAY, Configuration.Instance.AirdropMessageIcon, true);
+            if (isMass)
+            {
+                foreach (var airdrop in typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null) as List<AirdropNode>)
+                {
+                    LevelManager.airdrop(airdrop.point, airdrop.id, Provider.modeConfigData.Events.Airdrop_Speed);
+                }
+                ChatManager.serverSendMessage(Translate("MassAirdrop").ToRich(), Color.white, null, null, EChatMode.SAY, Configuration.Instance.AirdropMessageIcon, true);
+            }
+            else
+            {
+                ChatManager.serverSendMessage(Translate("Airdrop").ToRich(), Color.white, null, null, EChatMode.SAY, Configuration.Instance.AirdropMessageIcon, true);
+                LevelManager.airdropFrequency = 0;
+            }
         }
 
         public void OnLevelLoaded(int level)
         {
-            Logger.Log($"Creating your {Configuration.Instance.AirdropSpawns.Count} airdrop spawns...");
-            
+            Logger.Log($"Initializing your {Configuration.Instance.AirdropSpawns.Count} airdrop spawns...", ConsoleColor.Yellow);
             var field = typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic);
-            List<AirdropNode> airdropNodes = field.GetValue(null) as List<AirdropNode>;            
+            List<AirdropNode> airdropNodes = field.GetValue(null) as List<AirdropNode>;
 
             if (Configuration.Instance.UseDefaultSpawns)
             {
                 if (!Configuration.Instance.UseDefaultAirdrops)
                 {
-                    Random random = new Random();                    
+                    Random random = new Random();
                     foreach (AirdropNode airdropNode in airdropNodes)
-                    {                        
+                    {
                         airdropNode.id = Configuration.Instance.Airdrops[random.Next(Configuration.Instance.Airdrops.Count)].AirdropId;
                     }
                 }
-            } else
+            }
+            else
             {
                 airdropNodes = new List<AirdropNode>();
             }
@@ -102,7 +126,7 @@ namespace RestoreMonarchy.AirdropManager
                 if (spawn.AirdropId == 0)
                     airdropNodes.Add(new AirdropNode(spawn.Position.ToVector()));
                 else
-                    airdropNodes.Add(new AirdropNode(spawn.Position.ToVector(), spawn.AirdropId));               
+                    airdropNodes.Add(new AirdropNode(spawn.Position.ToVector(), spawn.AirdropId));
             }
 
             field.SetValue(null, airdropNodes);

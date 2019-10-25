@@ -1,9 +1,7 @@
 ﻿using Rocket.API;
+using Rocket.Core.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RestoreMonarchy.AirdropManager.Commands
 {
@@ -11,41 +9,28 @@ namespace RestoreMonarchy.AirdropManager.Commands
     {
         public void Execute(IRocketPlayer caller, params string[] command)
         {
-            AirdropManagerPlugin.Instance.CallAirdrop();
+            bool isMass = false;
+            if (command.Length > 0)
+                bool.TryParse(command[0], out isMass);
+
+            AirdropManagerPlugin.Instance.CallAirdrop(isMass);
+
+            if (isMass)
+                Logger.Log(AirdropManagerPlugin.Instance.Translate("SuccessMassAirdrop"), ConsoleColor.Yellow);
+            else
+                Logger.Log(AirdropManagerPlugin.Instance.Translate("SuccessAirdrop"), ConsoleColor.Yellow);
         }
 
-        public string Help
-        {
-            get { return "Calls in airdrop"; }
-        }
+        public string Help => "Calls in airdrop or mass airdrop";
 
-        public string Name
-        {
-            get { return "airdrop"; }
-        }
+        public string Name => "airdrop";
 
-        public string Syntax
-        {
-            get { return ""; }
-        }
+        public string Syntax => "[isMass]";
 
-        public List<string> Aliases
-        {
-            get { return new List<string>() { }; }
-        }
+        public List<string> Aliases => new List<string>();
 
-        public List<string> Permissions
-        {
-            get
-            {
-                return new List<string>() { "airdrop" };
-            }
-        }
+        public List<string> Permissions => new List<string>() { "airdrop" };
 
-
-        public AllowedCaller AllowedCaller
-        {
-            get { return Rocket.API.AllowedCaller.Both; }
-        }
+        public AllowedCaller AllowedCaller => AllowedCaller.Both;
     }
 }

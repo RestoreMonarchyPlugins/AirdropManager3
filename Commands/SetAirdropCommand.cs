@@ -2,11 +2,7 @@
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RestoreMonarchy.AirdropManager.Commands
@@ -19,7 +15,7 @@ namespace RestoreMonarchy.AirdropManager.Commands
 
             if (command.Length < 1)
             {
-                UnturnedChat.Say(caller, "Format: /setairdrop <airdrop id>", Color.red);
+                UnturnedChat.Say(caller, AirdropManagerPlugin.Instance.Translate("SetAirdropFormat"), Color.red);
                 return;
             }
 
@@ -35,46 +31,23 @@ namespace RestoreMonarchy.AirdropManager.Commands
                 AirdropManagerPlugin.Instance.Configuration.Save();
                 LevelNodes.nodes.Add(node);
 
-                UnturnedChat.Say(caller, $"Successfully created an airdrop spawn {position.ToString()}", Color.green);
-
+                UnturnedChat.Say(caller, AirdropManagerPlugin.Instance.Translate("SetAirdropSuccess"), Color.yellow);
             } else
             {
-                UnturnedChat.Say(caller, "Invalid airdropId", Color.red);
+                UnturnedChat.Say(caller, AirdropManagerPlugin.Instance.Translate("SetAirdropInvalid"), Color.yellow);
             }            
         }
 
-        public string Help
-        {
-            get { return "Sets airdrop spawn in your position"; }
-        }
+        public string Help => "Sets airdrop spawn in your position";
 
-        public string Name
-        {
-            get { return "setairdrop"; }
-        }
+        public string Name => "setairdrop";
 
-        public string Syntax
-        {
-            get { return "<airdrop id>"; }
-        }
+        public string Syntax => "<airdropId>";
 
-        public List<string> Aliases
-        {
-            get { return new List<string>() { }; }
-        }
+        public List<string> Aliases => new List<string>();
 
-        public List<string> Permissions
-        {
-            get
-            {
-                return new List<string>() { "setairdrop" };
-            }
-        }
+        public List<string> Permissions => new List<string>();
 
-
-        public AllowedCaller AllowedCaller
-        {
-            get { return Rocket.API.AllowedCaller.Both; }
-        }
+        public AllowedCaller AllowedCaller => AllowedCaller.Player;
     }
 }
