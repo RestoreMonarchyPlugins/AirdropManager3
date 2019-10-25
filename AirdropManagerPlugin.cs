@@ -8,8 +8,9 @@ using SDG.Unturned;
 using Logger = Rocket.Core.Logging.Logger;
 using Random = System.Random;
 using System.Reflection;
-using RestoreMonarchy.AirdropManager.Helpers;
+using RestoreMonarchy.AirdropManager.Utilities;
 using Rocket.Unturned.Chat;
+using RestoreMonarchy.AirdropManager.Models;
 
 namespace RestoreMonarchy.AirdropManager
 {
@@ -59,6 +60,7 @@ namespace RestoreMonarchy.AirdropManager
                     });
                 }
 
+                // Settings this to true solved the issue with only last time being dropped
                 asset.GetType().GetProperty("areTablesDirty", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).SetValue(asset, true);
                 Assets.add(asset, true);
             }
@@ -101,35 +103,31 @@ namespace RestoreMonarchy.AirdropManager
 
         public void OnLevelLoaded(int level)
         {
-            Logger.Log($"Initializing your {Configuration.Instance.AirdropSpawns.Count} airdrop spawns...", ConsoleColor.Yellow);
             var field = typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic);
-            List<AirdropNode> airdropNodes = field.GetValue(null) as List<AirdropNode>;
+            List<AirdropNode> nodes = field.GetValue(null) as List<AirdropNode>;
 
             if (Configuration.Instance.UseDefaultSpawns)
             {
                 if (!Configuration.Instance.UseDefaultAirdrops)
                 {
                     Random random = new Random();
-                    foreach (AirdropNode airdropNode in airdropNodes)
+                    foreach (AirdropNode node in nodes)
                     {
-                        airdropNode.id = Configuration.Instance.Airdrops[random.Next(Configuration.Instance.Airdrops.Count)].AirdropId;
+                        node.id = Configuration.Instance.Airdrops[random.Next(Configuration.Instance.Airdrops.Count)].AirdropId;
                     }
                 }
             }
             else
             {
-                airdropNodes = new List<AirdropNode>();
+                nodes = new List<AirdropNode>();
             }
 
             foreach (AirdropSpawn spawn in Configuration.Instance.AirdropSpawns)
             {
-                if (spawn.AirdropId == 0)
-                    airdropNodes.Add(new AirdropNode(spawn.Position.ToVector()));
-                else
-                    airdropNodes.Add(new AirdropNode(spawn.Position.ToVector(), spawn.AirdropId));
+                AirdropManagerUtility.AddAirdropToNodes(nodes, spawn);
             }
 
-            field.SetValue(null, airdropNodes);
-        }
+            field.SetValue(null, nodes);
+        }       
     }
 }

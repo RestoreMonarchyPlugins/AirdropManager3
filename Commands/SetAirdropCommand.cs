@@ -1,4 +1,6 @@
-﻿using Rocket.API;
+﻿using RestoreMonarchy.AirdropManager.Models;
+using RestoreMonarchy.AirdropManager.Utilities;
+using Rocket.API;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
@@ -23,13 +25,11 @@ namespace RestoreMonarchy.AirdropManager.Commands
             {
                 UnturnedPlayer player = (UnturnedPlayer)caller;
                 Vector3 position = player.Position;
+                AirdropSpawn spawn = new AirdropSpawn() { AirdropId = airdropId, Position = new Position(position.x, position.y, position.z) };
 
-                AirdropNode node;
-                node = new AirdropNode(position, airdropId);
-
-                AirdropManagerPlugin.Instance.Configuration.Instance.AirdropSpawns.Add(new AirdropSpawn() { AirdropId = airdropId, Position = new Position(position.x, position.y, position.z) });
+                AirdropManagerUtility.AddAirdropSpawn(spawn);
+                AirdropManagerPlugin.Instance.Configuration.Instance.AirdropSpawns.Add(spawn);
                 AirdropManagerPlugin.Instance.Configuration.Save();
-                LevelNodes.nodes.Add(node);
 
                 UnturnedChat.Say(caller, AirdropManagerPlugin.Instance.Translate("SetAirdropSuccess"), Color.yellow);
             } else

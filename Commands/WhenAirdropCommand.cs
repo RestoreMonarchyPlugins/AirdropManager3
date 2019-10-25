@@ -1,4 +1,4 @@
-﻿using RestoreMonarchy.AirdropManager.Helpers;
+﻿using RestoreMonarchy.AirdropManager.Utilities;
 using Rocket.API;
 using Rocket.Unturned.Chat;
 using System;
@@ -12,7 +12,7 @@ namespace RestoreMonarchy.AirdropManager.Commands
         public void Execute(IRocketPlayer caller, params string[] command)
         {
             TimeSpan timeLeft = TimeSpan.FromSeconds(AirdropManagerPlugin.Instance.AirdropTimerNext.Subtract(DateTime.Now).TotalSeconds);
-            UnturnedChat.Say(caller, AirdropManagerPlugin.Instance.Translations.Instance.Translate("NextAirdrop", FormatingHelper.ToPrettyFormat(timeLeft)), Color.green);
+            UnturnedChat.Say(caller, AirdropManagerPlugin.Instance.Translations.Instance.Translate("NextAirdrop", timeLeft.ToPrettyFormat()), Color.green);
         }
 
         public string Help => "Displays time left to next airdrop";

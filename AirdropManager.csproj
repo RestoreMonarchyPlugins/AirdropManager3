@@ -68,7 +68,11 @@
     <Compile Include="Commands\AirdropCommand.cs" />
     <Compile Include="Commands\SetAirdropCommand.cs" />
     <Compile Include="Commands\WhenAirdropCommand.cs" />
-    <Compile Include="Helpers\FormatingHelper.cs" />
+    <Compile Include="Models\Airdrop.cs" />
+    <Compile Include="Models\AirdropItem.cs" />
+    <Compile Include="Models\AirdropSpawn.cs" />
+    <Compile Include="Models\Position.cs" />
+    <Compile Include="Utilities\AirdropManagerUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

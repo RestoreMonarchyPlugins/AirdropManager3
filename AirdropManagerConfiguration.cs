@@ -1,7 +1,6 @@
-﻿using Rocket.API;
+﻿using RestoreMonarchy.AirdropManager.Models;
+using Rocket.API;
 using System.Collections.Generic;
-using System.Xml.Serialization;
-using UnityEngine;
 
 namespace RestoreMonarchy.AirdropManager
 {
@@ -27,56 +26,5 @@ namespace RestoreMonarchy.AirdropManager
             AirdropSpawns = new List<AirdropSpawn>() { new AirdropSpawn() { AirdropId = 1005, Position = new Position(1, 1, 1) } };
             BlacklistedAirdrops = new List<ushort>();
         }
-    }
-
-    public class Airdrop
-    {
-        [XmlAttribute("AirdropId")]
-        public ushort AirdropId { get; set; }
-        public List<AirdropItem> Items { get; set; }
-    }
-
-    public class AirdropItem
-    {
-        public AirdropItem() { }
-        public AirdropItem(ushort itemId, int chance)
-        {
-            ItemId = itemId;
-            Chance = chance;
-        }
-        [XmlAttribute("ItemId")]
-        public ushort ItemId { get; set; }
-        [XmlAttribute("Chance")]
-        public int Chance { get; set; }
-    }
-
-    public class AirdropSpawn
-    {
-        [XmlAttribute("AirdropId")]
-        public ushort AirdropId { get; set; }
-        public Position Position { get; set; }
-    }
-
-    public class Position
-    {
-        public Position() { }
-        public Position(float x, float y, float z)
-        {
-            X = x;
-            Y = y;
-            Z = z;
-        }
-
-        public Vector3 ToVector()
-        {
-            return new Vector3(X, Y, Z);
-        }
-
-        [XmlAttribute("X")]
-        public float X { get; set; }
-        [XmlAttribute("Y")]
-        public float Y { get; set; }
-        [XmlAttribute("Z")]
-        public float Z { get; set; }
     }
 }
