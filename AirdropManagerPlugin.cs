@@ -11,6 +11,7 @@ using System.Reflection;
 using RestoreMonarchy.AirdropManager.Utilities;
 using Rocket.Unturned.Chat;
 using RestoreMonarchy.AirdropManager.Models;
+using Rocket.Core.Utils;
 
 namespace RestoreMonarchy.AirdropManager
 {
@@ -80,8 +81,13 @@ namespace RestoreMonarchy.AirdropManager
 
         private void AirdropTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            CallAirdrop();
-            AirdropTimerNext = DateTime.Now.AddSeconds(Configuration.Instance.AirdropInterval);
+            // Make sure it's executed on the main thread
+            TaskDispatcher.QueueOnMainThread(() => 
+            {
+                CallAirdrop();
+                AirdropTimerNext = DateTime.Now.AddSeconds(Configuration.Instance.AirdropInterval);
+                Logger.Log("Airdrop has been sent by a timer!", ConsoleColor.Yellow);
+            });
         }
 
         public void CallAirdrop(bool isMass = false)
