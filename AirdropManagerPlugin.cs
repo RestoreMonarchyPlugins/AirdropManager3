@@ -62,7 +62,7 @@ namespace RestoreMonarchy.AirdropManager
                 }
 
                 // Setting this to true solved the issue with only last time being dropped
-                asset.GetType().GetProperty("areTablesDirty", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).SetValue(asset, new object[0]);
+                asset.GetType().GetProperty("areTablesDirty", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).SetValue(asset, true);
                 Assets.add(asset, true);
             }
 
