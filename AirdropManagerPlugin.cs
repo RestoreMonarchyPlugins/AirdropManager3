@@ -12,6 +12,7 @@ using RestoreMonarchy.AirdropManager.Utilities;
 using Rocket.Unturned.Chat;
 using RestoreMonarchy.AirdropManager.Models;
 using Rocket.Core.Utils;
+using Rocket.Unturned.Player;
 
 namespace RestoreMonarchy.AirdropManager
 {
@@ -21,6 +22,11 @@ namespace RestoreMonarchy.AirdropManager
         public Timer AirdropTimer { get; set; }
         public DateTime AirdropTimerNext { get; set; }
         public Color MessageColor { get; set; }
+                
+        public PropertyInfo PropertyAreTablesDirty { get; set; }
+        public FieldInfo FieldAirdropNodes { get; set; }
+        public FieldInfo FieldHasAirdrop { get; set; }
+
 
         public override TranslationList DefaultTranslations =>  new TranslationList()
         {
@@ -31,13 +37,19 @@ namespace RestoreMonarchy.AirdropManager
             { "MassAirdrop", "{size=17}{color=magenta}{i}Mass Airdrop{/i} is coming!{/color}{/size}" },
             { "SetAirdropFormat", "Format: /setairdrop <AirdropID>" },
             { "SetAirdropSuccess", "Successfully set an airdrop spawn at your position!" },
-            { "SetAirdropInvalid", "Invalid AirdropID" }
+            { "SetAirdropInvalid", "You must specify AirdropID and optionally spawn name" },
+            { "AirdropWithName", "Airdrop will be dropped at {0}!" }
         };
 
         protected override void Load()
         {
             Instance = this;
             MessageColor = UnturnedChat.GetColorFromName(Configuration.Instance.MessageColor, Color.green);
+
+            PropertyAreTablesDirty = typeof(SpawnAsset).GetProperty("areTablesDirty", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            FieldAirdropNodes = typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic);
+            FieldHasAirdrop = typeof(LevelManager).GetField("_hasAirdrop", BindingFlags.Static | BindingFlags.NonPublic);
+
             AirdropTimer = new Timer(Configuration.Instance.AirdropInterval * 1000);
             AirdropTimer.Elapsed += AirdropTimer_Elapsed;
             AirdropTimer.AutoReset = true;
@@ -62,10 +74,13 @@ namespace RestoreMonarchy.AirdropManager
                 }
 
                 // Setting this to true solved the issue with only last time being dropped
-                asset.GetType().GetProperty("areTablesDirty", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).SetValue(asset, true);
+                PropertyAreTablesDirty.SetValue(asset, true);
                 Assets.add(asset, true);
             }
 
+            if (Level.isLoaded)
+                OnLevelLoaded(0);
+            
             Level.onLevelLoaded += OnLevelLoaded;
 
             Logger.Log($"{Name} {Assembly.GetName().Version} has been loaded!", ConsoleColor.Yellow);
@@ -94,23 +109,31 @@ namespace RestoreMonarchy.AirdropManager
         {
             if (isMass)
             {
-                foreach (var airdrop in typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null) as List<AirdropNode>)
+                foreach (var airdrop in FieldAirdropNodes.GetValue(null) as List<AirdropNode>)
                 {
                     LevelManager.airdrop(airdrop.point, airdrop.id, Provider.modeConfigData.Events.Airdrop_Speed);
                 }
-                ChatManager.serverSendMessage(Translate("MassAirdrop").ToRich(), Color.white, null, null, EChatMode.SAY, Configuration.Instance.AirdropMessageIcon, true);
+                ChatManager.serverSendMessage(Translate("MassAirdrop").ToRich(), MessageColor, null, null, EChatMode.SAY, Configuration.Instance.AirdropMessageIcon, true);
             }
             else
             {
-                ChatManager.serverSendMessage(Translate("Airdrop").ToRich(), Color.white, null, null, EChatMode.SAY, Configuration.Instance.AirdropMessageIcon, true);
-                LevelManager.airdropFrequency = 0;
+                if (!Configuration.Instance.UseDefaultSpawns)
+                {
+                    var airdrop = Configuration.Instance.AirdropSpawns[UnityEngine.Random.Range(0, Configuration.Instance.AirdropSpawns.Count)];
+                    LevelManager.airdrop(airdrop.Position.ToVector(), airdrop.AirdropId, Provider.modeConfigData.Events.Airdrop_Speed);
+                    ChatManager.serverSendMessage(Translate("AirdropWithName", airdrop.Name).ToRich(), MessageColor, null, null, EChatMode.SAY, Configuration.Instance.AirdropMessageIcon, true);
+                    FieldHasAirdrop.SetValue(null, false);
+                } else
+                {
+                    ChatManager.serverSendMessage(Translate("Airdrop").ToRich(), MessageColor, null, null, EChatMode.SAY, Configuration.Instance.AirdropMessageIcon, true);
+                    LevelManager.airdropFrequency = 0;
+                }                
             }
         }
 
         public void OnLevelLoaded(int level)
         {
-            var field = typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic);
-            List<AirdropNode> nodes = field.GetValue(null) as List<AirdropNode>;
+            List<AirdropNode> nodes = FieldAirdropNodes.GetValue(null) as List<AirdropNode>;
 
             if (Configuration.Instance.UseDefaultSpawns)
             {
@@ -133,7 +156,7 @@ namespace RestoreMonarchy.AirdropManager
                 AirdropManagerUtility.AddAirdropToNodes(nodes, spawn);
             }
 
-            field.SetValue(null, nodes);
+            FieldAirdropNodes.SetValue(null, nodes);
         }       
     }
 }

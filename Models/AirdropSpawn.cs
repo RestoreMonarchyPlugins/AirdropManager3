@@ -9,8 +9,10 @@ namespace RestoreMonarchy.AirdropManager.Models
 {
     public class AirdropSpawn
     {
-        [XmlAttribute("AirdropId")]
+        [XmlAttribute]
         public ushort AirdropId { get; set; }
+        [XmlAttribute]
+        public string Name { get; set; }
         public Position Position { get; set; }
     }
 }
