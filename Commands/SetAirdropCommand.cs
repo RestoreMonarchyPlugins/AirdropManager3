@@ -20,27 +20,27 @@ namespace RestoreMonarchy.AirdropManager.Commands
                 return;
             }
 
-            ushort airdropId;
-            if (ushort.TryParse(command[0], out airdropId))
+            if (ushort.TryParse(command[0], out ushort airdropId))
             {
                 UnturnedPlayer player = (UnturnedPlayer)caller;
                 Vector3 position = player.Position;
-                AirdropSpawn spawn = new AirdropSpawn() 
-                { 
-                    AirdropId = airdropId, 
+                AirdropSpawn spawn = new AirdropSpawn()
+                {
+                    AirdropId = airdropId,
                     Name = command.ElementAtOrDefault(1),
-                    Position = new Position(position.x, position.y, position.z) 
+                    Position = new Position(position.x, position.y, position.z)
                 };
-                
+
                 AirdropManagerUtility.AddAirdropSpawn(spawn);
                 AirdropManagerPlugin.Instance.Configuration.Instance.AirdropSpawns.Add(spawn);
                 AirdropManagerPlugin.Instance.Configuration.Save();
 
                 UnturnedChat.Say(caller, AirdropManagerPlugin.Instance.Translate("SetAirdropSuccess"), Color.yellow);
-            } else
+            }
+            else
             {
                 UnturnedChat.Say(caller, AirdropManagerPlugin.Instance.Translate("SetAirdropInvalid"), Color.yellow);
-            }            
+            }
         }
 
         public string Help => "Sets airdrop spawn in your position";

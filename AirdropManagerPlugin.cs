@@ -27,7 +27,6 @@ namespace RestoreMonarchy.AirdropManager
         public FieldInfo FieldAirdropNodes { get; set; }
         public FieldInfo FieldHasAirdrop { get; set; }
 
-
         public override TranslationList DefaultTranslations =>  new TranslationList()
         {
             { "NextAirdrop", "Next airdrop will be in {0}" },
