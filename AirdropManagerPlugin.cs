@@ -13,6 +13,7 @@ using Rocket.Unturned.Chat;
 using RestoreMonarchy.AirdropManager.Models;
 using Rocket.Core.Utils;
 using Rocket.Unturned.Player;
+using HarmonyLib;
 
 namespace RestoreMonarchy.AirdropManager
 {
@@ -40,10 +41,16 @@ namespace RestoreMonarchy.AirdropManager
             { "AirdropWithName", "Airdrop will be dropped at {0}!" }
         };
 
+        public const string HarmonyId = "com.restoremonarchy.airdropmanager";
+
+        private Harmony harmony;
         protected override void Load()
         {
             Instance = this;
             MessageColor = UnturnedChat.GetColorFromName(Configuration.Instance.MessageColor, Color.green);
+
+            harmony = new Harmony(HarmonyId);
+            harmony.PatchAll();
 
             PropertyAreTablesDirty = typeof(SpawnAsset).GetProperty("areTablesDirty", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             FieldAirdropNodes = typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic);
@@ -149,7 +156,7 @@ namespace RestoreMonarchy.AirdropManager
             {
                 nodes = new List<AirdropNode>();
             }
-
+                
             foreach (AirdropSpawn spawn in Configuration.Instance.AirdropSpawns)
             {
                 AirdropManagerUtility.AddAirdropToNodes(nodes, spawn);
