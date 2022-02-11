@@ -1,10 +1,5 @@
 ﻿using HarmonyLib;
 using SDG.Unturned;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RestoreMonarchy.AirdropManager.Patches
 {
@@ -15,7 +10,12 @@ namespace RestoreMonarchy.AirdropManager.Patches
         [HarmonyPatch("OnCollisionEnter")]
         static void OnCollisionEnter_Prefix(Carepackage __instance)
         {
-            __instance.barricadeID = AirdropManagerPlugin.Instance.Configuration.Instance.AirdropBarricadeId;
+            ushort barricadeId = AirdropManagerPlugin.Instance.Configuration.Instance.AirdropBarricadeId;
+            ItemBarricadeAsset barricadeAsset = Assets.find(EAssetType.ITEM, barricadeId) as ItemBarricadeAsset;
+            if (barricadeAsset != null)
+            {
+                __instance.barricadeAsset = barricadeAsset;
+            }            
         }
     }
 }
