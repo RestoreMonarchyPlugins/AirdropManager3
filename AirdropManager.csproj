@@ -80,6 +80,7 @@
     <Compile Include="Models\Airdrop.cs" />
     <Compile Include="Models\AirdropItem.cs" />
     <Compile Include="Models\AirdropSpawn.cs" />
+    <Compile Include="Models\CustomAirdropSpawn.cs" />
     <Compile Include="Models\Position.cs" />
     <Compile Include="Patches\Carepackage_Patches.cs" />
     <Compile Include="Utilities\AirdropManagerUtility.cs" />

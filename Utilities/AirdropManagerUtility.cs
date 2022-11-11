@@ -26,24 +26,7 @@ namespace RestoreMonarchy.AirdropManager.Utilities
 
         public static string ToRich(this string value)
         {
-            return value.Replace('{', '<').Replace('}', '>');
-        }
-
-        public static void AddAirdropSpawn(AirdropSpawn spawn)
-        {
-            var field = typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic);
-            List<AirdropNode> nodes = field.GetValue(null) as List<AirdropNode>;
-
-            AddAirdropToNodes(nodes, spawn);
-            field.SetValue(null, nodes);
-        }
-
-        public static void AddAirdropToNodes(List<AirdropNode> nodes, AirdropSpawn spawn)
-        {
-            if (spawn.AirdropId == 0)
-                nodes.Add(new AirdropNode(spawn.Position.ToVector()));
-            else
-                nodes.Add(new AirdropNode(spawn.Position.ToVector(), spawn.AirdropId));
+            return value.Replace("{", "<").Replace("}", ">");
         }
     }
 }

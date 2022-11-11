@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
+﻿using UnityEngine;
 
 namespace RestoreMonarchy.AirdropManager.Models
 {
     public class AirdropSpawn
     {
-        [XmlAttribute]
         public ushort AirdropId { get; set; }
-        [XmlAttribute]
         public string Name { get; set; }
-        public Position Position { get; set; }
+        public Vector3 Position { get; set; }
+        public bool IsDefault { get; set; }
     }
 }
