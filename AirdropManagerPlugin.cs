@@ -8,7 +8,6 @@ using Rocket.Unturned.Chat;
 using SDG.Unturned;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Timers;
 using UnityEngine;
@@ -23,10 +22,9 @@ namespace RestoreMonarchy.AirdropManager
         public DateTime AirdropTimerNext { get; set; }
         public Color MessageColor { get; set; }
                 
+        public PropertyInfo PropertyAreTablesDirty { get; set; }
         public FieldInfo FieldAirdropNodes { get; set; }
         public FieldInfo FieldHasAirdrop { get; set; }
-        public FieldInfo SpawnAssetTables { get; set; }
-        public PropertyInfo SpawnAssetInsertRoots { get; set; }
 
         public override TranslationList DefaultTranslations =>  new TranslationList()
         {
@@ -41,23 +39,21 @@ namespace RestoreMonarchy.AirdropManager
             { "AirdropWithName", "<size=17>Airdrop will be dropped at {0}!</size>" }
         };
 
-        private const string HarmonyId = "com.restoremonarchy.airdropmanager";
+        public const string HarmonyId = "com.restoremonarchy.airdropmanager";
 
-        private Harmony _harmony;
+        private Harmony harmony;
         protected override void Load()
         {
             Instance = this;
             MessageColor = UnturnedChat.GetColorFromName(Configuration.Instance.MessageColor, Color.green);
 
-            _harmony = new Harmony(HarmonyId);
-            _harmony.PatchAll();
+            harmony = new Harmony(HarmonyId);
+            harmony.PatchAll();
 
+            PropertyAreTablesDirty = typeof(SpawnAsset).GetProperty("areTablesDirty", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             FieldAirdropNodes = typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic);
             FieldHasAirdrop = typeof(LevelManager).GetField("_hasAirdrop", BindingFlags.Static | BindingFlags.NonPublic);
-            SpawnAssetTables = typeof(SpawnAsset).GetField("_tables", BindingFlags.Instance | BindingFlags.NonPublic);
-            SpawnAssetInsertRoots =
-                typeof(SpawnAsset).GetProperty("insertRoots", BindingFlags.Instance | BindingFlags.Public);
-            
+
             LoadAirdropAssets();
             
             if (Level.isLoaded)
@@ -82,10 +78,10 @@ namespace RestoreMonarchy.AirdropManager
 
         protected override void Unload()
         {
-            _harmony.UnpatchAll();
             Level.onLevelLoaded -= LoadAirdropSpawns;
             Level.onLevelLoaded -= InitializeTimer;
             AirdropTimer.Elapsed -= AirdropTimer_Elapsed;
+
             Logger.Log($"{Name} has been unloaded!", ConsoleColor.Yellow);
         }
 
@@ -129,22 +125,21 @@ namespace RestoreMonarchy.AirdropManager
                 if (Configuration.Instance.BlacklistedAirdrops.Contains(airdrop.AirdropId))
                     continue;
 
-                var asset = new SpawnAsset()
+                SpawnAsset asset = new SpawnAsset(airdrop.AirdropId);
+                foreach (AirdropItem item in airdrop.Items)
                 {
-                    id = airdrop.AirdropId,
-                    GUID = Guid.NewGuid(),
-                };
-                SpawnAssetInsertRoots.SetValue(asset, new List<SpawnTable>());
-                SpawnAssetTables.SetValue(asset, airdrop.Items.Select(item => new SpawnTable()
-                {
-                    assetID = item.ItemId,
-                    weight = item.Chance,
-                    spawnID = 0,
-                    chance = 0
-                }).ToList());
+                    asset.tables.Add(new SpawnTable()
+                    {
+                        assetID = item.ItemId,
+                        weight = item.Chance,
+                        spawnID = 0,
+                        chance = 0
+                    });
+                }
 
-                asset.markTablesDirty();
-                Assets.add(asset, true); // obsolete but its the only way to access the internal version. You can access it with reflection but this also works :>
+                // Setting this to true solved the issue with only last time being dropped
+                PropertyAreTablesDirty.SetValue(asset, true);
+                Assets.add(asset, true);
             }
         }
 
