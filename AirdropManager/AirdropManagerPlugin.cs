@@ -20,11 +20,15 @@ namespace RestoreMonarchy.AirdropManager
         public static AirdropManagerPlugin Instance { get; set; }
         public Timer AirdropTimer { get; set; }
         public DateTime AirdropTimerNext { get; set; }
-        public Color MessageColor { get; set; }
-                
-        public PropertyInfo PropertyAreTablesDirty { get; set; }
-        public FieldInfo FieldAirdropNodes { get; set; }
-        public FieldInfo FieldHasAirdrop { get; set; }
+        public Color MessageColor { get; set; }                
+        
+        public FieldInfo LevelManagerAirdropNodesField { get; set; }
+        public FieldInfo LevelManagerHasAirdropField { get; set; }
+        
+        public FieldInfo SpawnAssetRootsField { get; set; }
+        public FieldInfo SpawnAssetTablesField { get; set; }
+        public PropertyInfo SpawnAssetAreTablesDirtyProperty { get; set; }
+        public PropertyInfo SpawnsAssetInsertRootsProperty { get; set; }
 
         public override TranslationList DefaultTranslations =>  new TranslationList()
         {
@@ -49,10 +53,14 @@ namespace RestoreMonarchy.AirdropManager
 
             harmony = new Harmony(HarmonyId);
             harmony.PatchAll();
-
-            PropertyAreTablesDirty = typeof(SpawnAsset).GetProperty("areTablesDirty", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-            FieldAirdropNodes = typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic);
-            FieldHasAirdrop = typeof(LevelManager).GetField("_hasAirdrop", BindingFlags.Static | BindingFlags.NonPublic);
+                        
+            LevelManagerAirdropNodesField = typeof(LevelManager).GetField("airdropNodes", BindingFlags.Static | BindingFlags.NonPublic);
+            LevelManagerHasAirdropField = typeof(LevelManager).GetField("_hasAirdrop", BindingFlags.Static | BindingFlags.NonPublic);
+            
+            SpawnAssetRootsField = typeof(SpawnAsset).GetField("_roots", BindingFlags.NonPublic | BindingFlags.Instance);
+            SpawnAssetTablesField = typeof(SpawnAsset).GetField("_tables", BindingFlags.NonPublic | BindingFlags.Instance);
+            SpawnAssetAreTablesDirtyProperty = typeof(SpawnAsset).GetProperty("areTablesDirty", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            SpawnsAssetInsertRootsProperty = typeof(SpawnAsset).GetProperty("insertRoots", BindingFlags.Instance | BindingFlags.Public);
 
             LoadAirdropAssets();
             
@@ -125,7 +133,15 @@ namespace RestoreMonarchy.AirdropManager
                 if (Configuration.Instance.BlacklistedAirdrops.Contains(airdrop.AirdropId))
                     continue;
 
-                SpawnAsset asset = new SpawnAsset(airdrop.AirdropId);
+                SpawnAsset asset = new() 
+                { 
+                    id = airdrop.AirdropId
+                };
+
+                SpawnsAssetInsertRootsProperty.SetValue(asset, new List<SpawnTable>());
+                SpawnAssetRootsField.SetValue(asset, new List<SpawnTable>());
+                SpawnAssetTablesField.SetValue(asset, new List<SpawnTable>());
+
                 foreach (AirdropItem item in airdrop.Items)
                 {
                     asset.tables.Add(new SpawnTable()
@@ -137,8 +153,7 @@ namespace RestoreMonarchy.AirdropManager
                     });
                 }
 
-                // Setting this to true solved the issue with only last time being dropped
-                PropertyAreTablesDirty.SetValue(asset, true);
+                SpawnAssetAreTablesDirtyProperty.SetValue(asset, true);
                 Assets.add(asset, true);
             }
         }
@@ -162,7 +177,7 @@ namespace RestoreMonarchy.AirdropManager
 
             if (Configuration.Instance.UseDefaultSpawns)
             {
-                List<AirdropDevkitNode> defaultAirdrops = FieldAirdropNodes.GetValue(null) as List<AirdropDevkitNode>;
+                List<AirdropDevkitNode> defaultAirdrops = LevelManagerAirdropNodesField.GetValue(null) as List<AirdropDevkitNode>;
                 if (defaultAirdrops == null || defaultAirdrops.Count == 0)
                 {
                     Logger.LogWarning("There isn't any default airdrop spawns on this server. You should disable UseDefaultSpawns in the config");
