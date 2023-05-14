@@ -9,10 +9,9 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
-	  <PackageReference Include="Lib.Harmony" Version="2.2.2" />
-	</ItemGroup>
-	
-	<ItemGroup>
+	  <Reference Include="0Harmony">
+	    <HintPath>..\lib\0Harmony.dll</HintPath>
+	  </Reference>
 	  <Reference Include="Assembly-CSharp">
 	    <HintPath>..\lib\Assembly-CSharp.dll</HintPath>
 	  </Reference>
