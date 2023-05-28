@@ -3,8 +3,8 @@
 	<PropertyGroup>
 		<TargetFramework>net461</TargetFramework>
 		<LangVersion>latest</LangVersion>
-		<Version>2.4.0</Version>
-		<AssemblyVersion>2.4.0</AssemblyVersion>
+		<Version>2.4.1</Version>
+		<AssemblyVersion>2.4.1</AssemblyVersion>
 		<RootNamespace>RestoreMonarchy.AirdropManager</RootNamespace>
 	</PropertyGroup>
 	

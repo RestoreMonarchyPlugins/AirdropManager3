@@ -236,6 +236,12 @@ namespace RestoreMonarchy.AirdropManager
 
         public void CallAirdrop(bool isMass = false, bool shouldLog = true)
         {
+            if (AirdropSpawns.Count == 0)
+            {
+                Logger.LogWarning("There isn't any airdrop spawns on this map or in the config. Use /setairdrop command to set custom spawns!");
+                return;
+            }
+
             if (isMass)
             {
                 CallMassAirdrop();
