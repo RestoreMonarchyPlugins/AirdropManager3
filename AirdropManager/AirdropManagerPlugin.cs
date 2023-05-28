@@ -2,6 +2,7 @@
 using RestoreMonarchy.AirdropManager.Models;
 using RestoreMonarchy.AirdropManager.Utilities;
 using Rocket.API.Collections;
+using Rocket.Core.Assets;
 using Rocket.Core.Plugins;
 using Rocket.Core.Utils;
 using Rocket.Unturned.Chat;
@@ -29,6 +30,8 @@ namespace RestoreMonarchy.AirdropManager
         public FieldInfo SpawnAssetTablesField { get; set; }
         public PropertyInfo SpawnAssetAreTablesDirtyProperty { get; set; }
         public PropertyInfo SpawnsAssetInsertRootsProperty { get; set; }
+        public MethodInfo AddToMappingMethod { get; set; }
+        public FieldInfo CurrentAssetMappingField { get; set; }
 
         public override TranslationList DefaultTranslations =>  new TranslationList()
         {
@@ -61,17 +64,19 @@ namespace RestoreMonarchy.AirdropManager
             SpawnAssetTablesField = typeof(SpawnAsset).GetField("_tables", BindingFlags.NonPublic | BindingFlags.Instance);
             SpawnAssetAreTablesDirtyProperty = typeof(SpawnAsset).GetProperty("areTablesDirty", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             SpawnsAssetInsertRootsProperty = typeof(SpawnAsset).GetProperty("insertRoots", BindingFlags.Instance | BindingFlags.Public);
-
-            LoadAirdropAssets();
-            
+            AddToMappingMethod = typeof(Assets).GetMethod("AddToMapping", BindingFlags.NonPublic | BindingFlags.Static);
+            CurrentAssetMappingField = typeof(Assets).GetField("currentAssetMapping", BindingFlags.NonPublic | BindingFlags.Static);
+                        
             if (Level.isLoaded)
             {
                 LoadAirdropSpawns(0);
                 InitializeTimer(0);
+                LoadAirdropAssets(0);
             } else
             {
                 Level.onLevelLoaded += LoadAirdropSpawns;
                 Level.onLevelLoaded += InitializeTimer;
+                Level.onLevelLoaded += LoadAirdropAssets;
             }
 
             if (Provider.modeConfigData.Events.Use_Airdrops)
@@ -126,8 +131,9 @@ namespace RestoreMonarchy.AirdropManager
             return Configuration.Instance.AirdropSpeed ?? Provider.modeConfigData.Events.Airdrop_Speed;
         }
 
-        private void LoadAirdropAssets()
+        private void LoadAirdropAssets(int level)
         {
+            Logger.Log("Loading airdrop assets...", ConsoleColor.Yellow);
             foreach (Airdrop airdrop in Configuration.Instance.Airdrops)
             {
                 if (Configuration.Instance.BlacklistedAirdrops.Contains(airdrop.AirdropId))
@@ -154,8 +160,12 @@ namespace RestoreMonarchy.AirdropManager
                 }
 
                 SpawnAssetAreTablesDirtyProperty.SetValue(asset, true);
-                Assets.add(asset, true);
+
+                object assetMapping = CurrentAssetMappingField.GetValue(null);
+                AddToMappingMethod.Invoke(null, new object[] { asset, true, assetMapping });
             }
+            Assets.linkSpawns();
+            Logger.Log($"{Configuration.Instance.Airdrops.Count} airdrop assets have been loaded!", ConsoleColor.Yellow);
         }
 
         private void LoadAirdropSpawns(int level)
