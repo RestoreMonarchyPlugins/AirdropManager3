@@ -26,7 +26,7 @@ namespace RestoreMonarchy.AirdropManager
             UseDefaultAirdrops = false;
             AirdropMessageIcon = "https://i.imgur.com/JCDmlqI.png";
             AirdropInterval = 3600;
-            AirdropBarricadeId = 1374;
+            AirdropBarricadeId = 0;
             AirdropSpeed = 128;
             Airdrops = new List<Airdrop>() 
             { 
