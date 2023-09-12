@@ -39,7 +39,19 @@ namespace RestoreMonarchy.AirdropManager
                         new AirdropItem(363, 10, "Maplestrike"), 
                         new AirdropItem(17, 20, "Military Drum") 
                     } 
-                } 
+                },
+                new Airdrop()
+                {
+                    AirdropId = 13624,
+                    StorageSizeX = 7,
+                    StorageSizeY = 3,
+                    Items2 = new List<AirdropItem2>()
+                    {
+                        new AirdropItem2(132, 1),
+                        new AirdropItem2(133, 1),
+                        new AirdropItem2(254, 5)
+                    }
+                }
             };
             AirdropSpawns = new List<CustomAirdropSpawn>() 
             { 
