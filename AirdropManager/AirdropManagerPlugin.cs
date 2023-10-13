@@ -32,6 +32,7 @@ namespace RestoreMonarchy.AirdropManager
         public PropertyInfo SpawnsAssetInsertRootsProperty { get; set; }
         public MethodInfo AddToMappingMethod { get; set; }
         public FieldInfo CurrentAssetMappingField { get; set; }
+        public FieldInfo SpawnTableLegacyAssetIdField { get; set; }
 
         public override TranslationList DefaultTranslations =>  new TranslationList()
         {
@@ -66,7 +67,8 @@ namespace RestoreMonarchy.AirdropManager
             SpawnsAssetInsertRootsProperty = typeof(SpawnAsset).GetProperty("insertRoots", BindingFlags.Instance | BindingFlags.Public);
             AddToMappingMethod = typeof(Assets).GetMethod("AddToMapping", BindingFlags.NonPublic | BindingFlags.Static);
             CurrentAssetMappingField = typeof(Assets).GetField("currentAssetMapping", BindingFlags.NonPublic | BindingFlags.Static);
-                        
+            SpawnTableLegacyAssetIdField = typeof(SpawnTable).GetField("legacyAssetId", BindingFlags.NonPublic | BindingFlags.Instance);
+
             if (Level.isLoaded)
             {
                 LoadAirdropSpawns(0);
@@ -150,13 +152,13 @@ namespace RestoreMonarchy.AirdropManager
 
                 foreach (AirdropItem item in airdrop.Items)
                 {
-                    asset.tables.Add(new SpawnTable()
+                    SpawnTable spawnTable = new()
                     {
-                        assetID = item.ItemId,
-                        weight = item.Chance,
-                        spawnID = 0,
-                        chance = 0
-                    });
+                        weight = item.Chance
+                    };
+                    SpawnTableLegacyAssetIdField.SetValue(spawnTable, item.ItemId);
+
+                    asset.tables.Add(spawnTable);
                 }
 
                 SpawnAssetAreTablesDirtyProperty.SetValue(asset, true);
@@ -195,7 +197,7 @@ namespace RestoreMonarchy.AirdropManager
                 {
                     foreach (AirdropDevkitNode defaultAirdrop in defaultAirdrops)
                     {
-                        AirdropSpawn airdropSpawn = new AirdropSpawn()
+                        AirdropSpawn airdropSpawn = new()
                         {
                             AirdropId = defaultAirdrop.id,
                             Name = null,
