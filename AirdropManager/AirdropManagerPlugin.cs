@@ -36,9 +36,7 @@ namespace RestoreMonarchy.AirdropManager
 
         public override TranslationList DefaultTranslations =>  new TranslationList()
         {
-            { "NextAirdrop", "Next airdrop will be in {0}" },
-            { "SuccessAirdrop", "Successfully called in airdrop!" },
-            { "SuccessMassAirdrop", "Successfully called in mass airdrop!" },            
+            { "NextAirdrop", "Next airdrop will be in {0}" },        
             { "Airdrop", "<size=17>Airdrop is coming!</size>" },
             { "MassAirdrop", "<size=20>Mass Airdrop is coming!</size>" },
             { "SetAirdropFormat", "Format: /setairdrop <AirdropID>" },
@@ -78,7 +76,7 @@ namespace RestoreMonarchy.AirdropManager
             {
                 Level.onLevelLoaded += LoadAirdropSpawns;
                 Level.onLevelLoaded += InitializeTimer;
-                Level.onLevelLoaded += LoadAirdropAssets;
+                Level.onPreLevelLoaded += LoadAirdropAssets;
             }
 
             if (Provider.modeConfigData.Events.Use_Airdrops)
@@ -93,6 +91,7 @@ namespace RestoreMonarchy.AirdropManager
 
         protected override void Unload()
         {
+            Level.onPreLevelLoaded -= LoadAirdropAssets;
             Level.onLevelLoaded -= LoadAirdropSpawns;
             Level.onLevelLoaded -= InitializeTimer;
             AirdropTimer.Elapsed -= AirdropTimer_Elapsed;

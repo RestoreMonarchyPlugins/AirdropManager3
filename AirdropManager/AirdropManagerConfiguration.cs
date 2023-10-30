@@ -31,12 +31,13 @@ namespace RestoreMonarchy.AirdropManager
             Airdrops = new List<Airdrop>() 
             { 
                 new Airdrop() 
-                { 
-                    AirdropId = 13623, 
+                {
+                    AirdropId = 13623,
+                    Name = "Military",
                     Items = new List<AirdropItem>() 
                     { 
-                        new AirdropItem(363, 10), 
-                        new AirdropItem(17, 20) 
+                        new AirdropItem(363, 10, "Maplestrike"), 
+                        new AirdropItem(17, 20, "Military Drum") 
                     } 
                 } 
             };

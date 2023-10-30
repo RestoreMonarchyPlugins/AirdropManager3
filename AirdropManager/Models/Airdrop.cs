@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace RestoreMonarchy.AirdropManager.Models
 {
     public class Airdrop
     {
-        [XmlAttribute("AirdropId")]
+        [XmlAttribute]
         public ushort AirdropId { get; set; }
-        public List<AirdropItem> Items { get; set; }
+        [XmlAttribute]
+        public string Name { get; set; }
+        public bool ShouldSerializeName() => !string.IsNullOrEmpty(Name);
+
+        public List<AirdropItem> Items { get; set; }        
     }
 }

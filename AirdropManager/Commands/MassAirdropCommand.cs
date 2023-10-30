@@ -5,25 +5,25 @@ using System.Collections.Generic;
 
 namespace RestoreMonarchy.AirdropManager.Commands
 {
-    public class AirdropCommand : IRocketCommand
+    public class MassAirdropCommand : IRocketCommand
     {
         private AirdropManagerPlugin pluginInstance => AirdropManagerPlugin.Instance;
 
-        public void Execute(IRocketPlayer caller, params string[] command)
+        public void Execute(IRocketPlayer caller, string[] command)
         {
             pluginInstance.CallAirdrop(false);
         }
 
-        public string Help => "Calls in airdrop at the random spawn";
+        public AllowedCaller AllowedCaller => AllowedCaller.Both;
 
-        public string Name => "airdrop";
+        public string Name => "massairdrop";
+
+        public string Help => "Calls an airdrop in every spawn possible";
 
         public string Syntax => "";
 
         public List<string> Aliases => new();
 
         public List<string> Permissions => new();
-
-        public AllowedCaller AllowedCaller => AllowedCaller.Both;
     }
 }
