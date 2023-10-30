@@ -11,7 +11,7 @@ namespace RestoreMonarchy.AirdropManager.Commands
 
         public void Execute(IRocketPlayer caller, string[] command)
         {
-            pluginInstance.CallAirdrop(false);
+            pluginInstance.CallAirdrop(true);
         }
 
         public AllowedCaller AllowedCaller => AllowedCaller.Both;
