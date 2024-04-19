@@ -1,27 +1,47 @@
-[![Version](https://img.shields.io/github/release/RestoreMonarchyPlugins/AirdropManager.svg)](https://github.com/RestoreMonarchyPlugins/AirdropManager/releases) ![Discord](https://discordapp.com/api/guilds/520355060312440853/widget.png)
-# AirdropManager 2.1 - RocketMod4 Plugin
+## AirdropManager
+
+### Features
+* Create airdrops with custom loot
+* Disable or override default airdrop spawns
+* Set custom airdrop spawn positions
+* Optionally set a custom airdrop speed and barricade
+
+### Commands
+* **/whenairdrop** - Displays time left to the next scheduled airdrop
+* **/airdrop** - Calls in airdrop at the random spawn position
+* **/massairdrop** - Calls in airdrop at every possible spawn positions
+* **/setairdrop** *\<airdropId\> [name]* - Set the airdrop spawn at your current position
+
+### FAQ
+**Why does Airdrop spawn empty?**
+Most common reason is one or more of the items you have configured in the airdrop no longer exist on the server, because You uninstalled the original workshop file from the server or they just never existed.
 
 ### Configuration
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <AirdropManagerConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <MessageColor>yellow</MessageColor>
   <UseDefaultSpawns>true</UseDefaultSpawns>
   <UseDefaultAirdrops>false</UseDefaultAirdrops>
   <AirdropMessageIcon>https://i.imgur.com/JCDmlqI.png</AirdropMessageIcon>
   <AirdropInterval>3600</AirdropInterval>
+  <AirdropBarricadeId>0</AirdropBarricadeId>
+  <AirdropSpeed>128</AirdropSpeed>
   <Airdrops>
-    <Airdrop AirdropId="1005">
+    <Airdrop AirdropId="13623" Name="Military">
       <Items>
-        <AirdropItem ItemId="363" Chance="10" />
-        <AirdropItem ItemId="17" Chance="20" />
+        <AirdropItem ItemId="363" Chance="10" Name="Maplestrike" />
+        <AirdropItem ItemId="17" Chance="20" Name="Military Drum" />
       </Items>
     </Airdrop>
   </Airdrops>
   <AirdropSpawns>
+    <AirdropSpawn AirdropId="13623" Name="Middle of the map">
+      <Position X="0" Y="0" Z="0" />
+    </AirdropSpawn>
   </AirdropSpawns>
   <BlacklistedAirdrops />
-  <MessageColor>yellow</MessageColor>
 </AirdropManagerConfiguration>
 ```
 
