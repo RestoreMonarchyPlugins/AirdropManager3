@@ -26,7 +26,7 @@ namespace RestoreMonarchy.AirdropManager.Utilities
 
         public static string ToRich(this string value)
         {
-            return value.Replace("{", "<").Replace("}", ">");
+            return value.Replace("[[", "<").Replace("]]", ">");
         }
     }
 }

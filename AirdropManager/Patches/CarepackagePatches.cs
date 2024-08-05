@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using RestoreMonarchy.AirdropManager.Models;
-using Rocket.Core.Logging;
 using SDG.Unturned;
 using System;
 using System.Linq;
@@ -11,11 +10,11 @@ using Logger = Rocket.Core.Logging.Logger;
 namespace RestoreMonarchy.AirdropManager.Patches
 {
     [HarmonyPatch(typeof(Carepackage))]
-    class Carepackage_Patches
+    class CarepackagePatches
     {
         [HarmonyPrefix]
         [HarmonyPatch("OnCollisionEnter")]
-        static bool OnCollisionEnter_Prefix(Carepackage __instance, Collision collision)
+        static bool OnCollisionEnterPrefix(Carepackage __instance, Collision collision)
         {
             ushort barricadeId = AirdropManagerPlugin.Instance.Configuration.Instance.AirdropBarricadeId;
             if (barricadeId != 0)
@@ -29,7 +28,7 @@ namespace RestoreMonarchy.AirdropManager.Patches
 
             ushort airdropId = __instance.id;
 
-            Airdrop airdrop = AirdropManagerPlugin.Instance.Configuration.Instance.Airdrops.FirstOrDefault(x => x.AirdropId == airdropId);
+            CustomAirdrop airdrop = AirdropManagerPlugin.Instance.Configuration.Instance.Airdrops.FirstOrDefault(x => x.AirdropId == airdropId);
 
             if (airdrop == null || airdrop.Items2 == null || airdrop.Items2.Count == 0)
             {
@@ -66,7 +65,7 @@ namespace RestoreMonarchy.AirdropManager.Patches
             Transform transform = BarricadeManager.dropBarricade(new Barricade(itemBarricadeAsset), null, __instance.transform.position, 0f, 0f, 0f, 0UL, 0UL);
             if (transform != null)
             {
-                squishPlayersUnderBoxMethod.Invoke(__instance, new object[] { transform });
+                squishPlayersUnderBoxMethod.Invoke(__instance, [transform]);
                 InteractableStorage component = transform.GetComponent<InteractableStorage>();
                 component.despawnWhenDestroyed = true;
                 if (airdrop.StorageSizeX != 0 && airdrop.StorageSizeY != 0)
@@ -75,7 +74,7 @@ namespace RestoreMonarchy.AirdropManager.Patches
                 }                
                 if (component != null && component.items != null)
                 {
-                    foreach (AirdropItem2 item in airdrop.Items2)
+                    foreach (CustomAirdropItem2 item in airdrop.Items2)
                     {
                         for (int i = 0; i < item.Quantity; i++)
                         {

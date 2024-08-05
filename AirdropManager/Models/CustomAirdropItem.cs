@@ -2,10 +2,10 @@
 
 namespace RestoreMonarchy.AirdropManager.Models
 {
-    public class AirdropItem
+    public class CustomAirdropItem
     {
-        public AirdropItem() { }
-        public AirdropItem(ushort itemId, int chance, string name)
+        public CustomAirdropItem() { }
+        public CustomAirdropItem(ushort itemId, int chance, string name)
         {
             ItemId = itemId;
             Chance = chance;

@@ -1,7 +1,9 @@
-﻿using Rocket.API;
+﻿using RestoreMonarchy.AirdropManager.Models;
+using Rocket.API;
 using Rocket.Core.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RestoreMonarchy.AirdropManager.Commands
 {
@@ -11,10 +13,22 @@ namespace RestoreMonarchy.AirdropManager.Commands
 
         public void Execute(IRocketPlayer caller, params string[] command)
         {
-            pluginInstance.CallAirdrop(false);
+            string airdropName = string.Join(" ", command);
+            if (command.Length == 0)
+            {
+                pluginInstance.CallAirdrop();
+                return;
+            }
+
+            CustomAirdrop airdrop = pluginInstance.Configuration.Instance.Airdrops.FirstOrDefault(x => x.Name.Equals(airdropName, StringComparison.OrdinalIgnoreCase));
+            if (airdrop == null)
+            {
+
+            }
+            pluginInstance.CallAirdrop();
         }
 
-        public string Help => "Calls in airdrop at the random spawn";
+        public string Help => "Call in airdrop";
 
         public string Name => "airdrop";
 

@@ -11,12 +11,15 @@ namespace RestoreMonarchy.AirdropManager
         public bool UseDefaultSpawns { get; set; }
         public bool UseDefaultAirdrops { get; set; }
         public string AirdropMessageIcon { get; set; }
-        public double AirdropInterval { get; set; }
+        public float AirdropIntervalMin { get; set; } = 2400;
+        public float AirdropIntervalMax { get; set; } = 3600;
         public ushort AirdropBarricadeId { get; set; }
         public float? AirdropSpeed { get; set; }
-        public List<Airdrop> Airdrops { get; set; }
+        [XmlArrayItem("Airdrop")]
+        public List<CustomAirdrop> Airdrops { get; set; }
         [XmlArrayItem("AirdropSpawn")]
         public List<CustomAirdropSpawn> AirdropSpawns { get; set; }
+        [XmlArrayItem("BlacklistedAirdrop")]
         public List<ushort> BlacklistedAirdrops { get; set; }
 
         public void LoadDefaults()
@@ -25,31 +28,32 @@ namespace RestoreMonarchy.AirdropManager
             UseDefaultSpawns = true;
             UseDefaultAirdrops = false;
             AirdropMessageIcon = "https://i.imgur.com/JCDmlqI.png";
-            AirdropInterval = 3600;
+            AirdropIntervalMin = 2400;
+            AirdropIntervalMax = 3600;
             AirdropBarricadeId = 0;
             AirdropSpeed = 128;
-            Airdrops = new List<Airdrop>() 
+            Airdrops = new List<CustomAirdrop>() 
             { 
-                new Airdrop() 
+                new CustomAirdrop() 
                 {
                     AirdropId = 13623,
                     Name = "Military",
-                    Items = new List<AirdropItem>() 
+                    Items = new List<CustomAirdropItem>() 
                     { 
-                        new AirdropItem(363, 10, "Maplestrike"), 
-                        new AirdropItem(17, 20, "Military Drum") 
+                        new CustomAirdropItem(363, 10, "Maplestrike"), 
+                        new CustomAirdropItem(17, 20, "Military Drum") 
                     } 
                 },
-                new Airdrop()
+                new CustomAirdrop()
                 {
                     AirdropId = 13624,
                     StorageSizeX = 7,
                     StorageSizeY = 3,
-                    Items2 = new List<AirdropItem2>()
+                    Items2 = new List<CustomAirdropItem2>()
                     {
-                        new AirdropItem2(132, 1),
-                        new AirdropItem2(133, 1),
-                        new AirdropItem2(254, 5)
+                        new CustomAirdropItem2(132, 1, "Dragonfang"),
+                        new CustomAirdropItem2(133, 1, "Dragonfang Box"),
+                        new CustomAirdropItem2(254, 5, "Fragmentation Grenade")
                     }
                 }
             };
