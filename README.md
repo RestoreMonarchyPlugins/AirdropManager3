@@ -82,7 +82,7 @@ In `Airdrops.{Map}.xml` file add `<LandedEffectGuid />` tag, like so:
 ```
 
 ## Configuration
-### AirdropManager.configuration.xml
+### AirdropManager3.configuration.xml
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <AirdropManager3Configuration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
