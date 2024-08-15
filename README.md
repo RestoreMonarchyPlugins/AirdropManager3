@@ -109,6 +109,7 @@ In `Airdrops.{Map}.xml` file add `<LandedEffectGuid />` tag, like so:
 ```
 
 ### Airdrops.Washington.xml
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <AirdropsConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Airdrops>
