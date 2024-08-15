@@ -2,16 +2,13 @@
 using RestoreMonarchy.AirdropManager.Models;
 using RestoreMonarchy.AirdropManager.Utilities;
 using Rocket.API.Collections;
-using Rocket.Core.Assets;
 using Rocket.Core.Plugins;
-using Rocket.Core.Utils;
 using Rocket.Unturned.Chat;
 using SDG.Unturned;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Timers;
 using UnityEngine;
 using Logger = Rocket.Core.Logging.Logger;
 
@@ -21,9 +18,7 @@ namespace RestoreMonarchy.AirdropManager
     {
         public static AirdropManagerPlugin Instance { get; set; }
         public DateTime AirdropTimerNext { get; set; }
-        public Color MessageColor { get; set; }                
-        
-        
+        public Color MessageColor { get; set; }
 
         public override TranslationList DefaultTranslations =>  new TranslationList()
         {
@@ -76,6 +71,15 @@ namespace RestoreMonarchy.AirdropManager
             Logger.Log($"{Name} has been unloaded!", ConsoleColor.Yellow);
         }
 
+        internal void LogDebug(string message)
+        {
+            if (Configuration.Instance.Debug)
+            {
+                Logger.Log($"Debug >> {message}", ConsoleColor.Gray);
+            }
+        }
+
+
         public List<CustomAirdrop> MyProperty { get; set; }
         public List<AirdropSpawn> AirdropSpawns { get; set; }
 
@@ -120,18 +124,16 @@ namespace RestoreMonarchy.AirdropManager
             }
 
             return Configuration.Instance.AirdropSpeed ?? Provider.modeConfigData.Events.Airdrop_Speed;
-        }
-
-        
-
+        }   
         
 
         public void CallMassAirdrop(bool shouldLog = true)
         {
-            float airdropSpeed = GetAirdropSpeed();
+            
 
             foreach (AirdropSpawn airdropSpawn in AirdropSpawns)
             {
+                float airdropSpeed = GetAirdropSpeed();
                 LevelManager.airdrop(airdropSpawn.Position, airdropSpawn.AirdropId, airdropSpeed);
             }
 

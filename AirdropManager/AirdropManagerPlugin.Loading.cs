@@ -34,6 +34,73 @@ namespace RestoreMonarchy.AirdropManager
             SpawnTableLegacyAssetIdField = typeof(SpawnTable).GetField("legacyAssetId", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
+        private List<SpawnItemInfo> GetSpawnItems(SpawnAsset spawnAsset, EAssetType assetType, int num = 0)
+        {
+            List<SpawnItemInfo> spawnItems = new();
+
+            if (num++ > 32)
+            {
+                return spawnItems;
+            }
+
+            foreach (SpawnTable spawnTable in spawnAsset.tables)
+            {
+                Asset asset = spawnTable.FindAsset(assetType);
+
+                if (asset == null)
+                {
+                    return [];
+                }
+
+                if (asset is SpawnAsset spawnAsset2)
+                {
+                    spawnItems.AddRange(GetSpawnItems(spawnAsset2, assetType, num));
+                }
+                else if (asset is ItemAsset itemAsset)
+                {
+                    spawnItems.Add(new SpawnItemInfo()
+                    {
+                        AssetId = itemAsset.id,
+                        Name = itemAsset.itemName,
+                        Weight = spawnTable.weight
+                    });
+                }
+                else if (asset is VehicleAsset vehicleAsset)
+                {
+                    spawnItems.Add(new SpawnItemInfo()
+                    {
+                        AssetId = vehicleAsset.id,
+                        Name = vehicleAsset.vehicleName,
+                        Weight = spawnTable.weight
+                    });
+                }
+                else if (asset is VehicleRedirectorAsset vehicleRedirectorAsset)
+                {
+                    spawnItems.Add(new SpawnItemInfo()
+                    {
+                        AssetId = vehicleRedirectorAsset.id,
+                        Name = vehicleRedirectorAsset.FriendlyName,
+                        Weight = spawnTable.weight
+                    });
+                }
+                else if (asset is AnimalAsset animalAsset)
+                {
+                    spawnItems.Add(new SpawnItemInfo()
+                    {
+                        AssetId = animalAsset.id,
+                        Name = animalAsset.animalName,
+                        Weight = spawnTable.weight
+                    });
+                }
+                else
+                {
+                    LogDebug($"Unknown asset type: {asset.GetType().Name} - {asset.id} - {asset.name}");
+                }
+            }
+
+            return spawnItems;
+        }
+
         private void LoadAirdropSpawns(int level)
         {
             AirdropSpawns = new List<AirdropSpawn>();

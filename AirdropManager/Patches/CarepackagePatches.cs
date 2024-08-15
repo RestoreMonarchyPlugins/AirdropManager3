@@ -67,7 +67,7 @@ namespace RestoreMonarchy.AirdropManager.Patches
             {
                 squishPlayersUnderBoxMethod.Invoke(__instance, [transform]);
                 InteractableStorage component = transform.GetComponent<InteractableStorage>();
-                component.despawnWhenDestroyed = true;
+                component.despawnWhenDestroyed = true; 
                 if (airdrop.StorageSizeX != 0 && airdrop.StorageSizeY != 0)
                 {
                     component.items.resize(airdrop.StorageSizeX, airdrop.StorageSizeY);

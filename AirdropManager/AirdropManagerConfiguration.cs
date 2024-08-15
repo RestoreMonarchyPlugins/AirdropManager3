@@ -7,6 +7,7 @@ namespace RestoreMonarchy.AirdropManager
 {
     public class AirdropManagerConfiguration : IRocketPluginConfiguration
     {
+        public bool Debug { get; set; }
         public string MessageColor { get; set; }
         public bool UseDefaultSpawns { get; set; }
         public bool UseDefaultAirdrops { get; set; }
@@ -24,6 +25,7 @@ namespace RestoreMonarchy.AirdropManager
 
         public void LoadDefaults()
         {
+            Debug = false;
             MessageColor = "yellow";
             UseDefaultSpawns = true;
             UseDefaultAirdrops = false;
