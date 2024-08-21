@@ -71,6 +71,7 @@ namespace RestoreMonarchy.AirdropManager3
             message = message.Replace("{position_x}", position.x.ToString());
             message = message.Replace("{position_y}", position.y.ToString());
             message = message.Replace("{position_z}", position.z.ToString());
+            message = message.Replace("{min_players}", Configuration.Instance.AirdropIntervalMinPlayers.ToString());
             if (player == null)
             {
                 player = new ConsolePlayer();
