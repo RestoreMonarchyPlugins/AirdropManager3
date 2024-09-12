@@ -34,18 +34,26 @@ namespace RestoreMonarchy.AirdropManager3
                             Broadcast broadcast = Configuration.Instance.Broadcasts.AirdropInterval;
                             SendBroadcastMessage(broadcast, airdrop, airdropSpawn, null, airdropSpawn.Vector3);
 
-                            LogInfo($"Airdrop {airdrop.DisplayName()} called in by interval at {airdropSpawn.DisplayName()}.");
+                            if (Provider.clients.Count > 0)
+                            {
+                                LogInfo($"Airdrop {airdrop.DisplayName()} called in by interval at {airdropSpawn.DisplayName()}.");
+                            }                                
                         } else
                         {
-                            LogInfo($"There isn't any airdrop spawns.");
+                            if (Provider.clients.Count > 0)
+                            {
+                                LogInfo($"There isn't any airdrop spawns.");
+                            }
                         }
                     }
                     else
                     {
                         Broadcast broadcast = Configuration.Instance.Broadcasts.AirdropIntervalMinPlayers;
                         SendBroadcastMessage(broadcast, null, null, null, default);
-
-                        LogInfo($"Airdrop interval skipped: less than {minPlayers} players online.");
+                        if (Provider.clients.Count > 0)
+                        {
+                            LogInfo($"Airdrop interval skipped: less than {minPlayers} players online.");
+                        }                        
                     }
                 }
 
