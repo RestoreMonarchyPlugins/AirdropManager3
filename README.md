@@ -25,50 +25,66 @@ The all-in-one airdrop manager for Unturned servers.
 * **/rocket reload airdropmanager** - Reload the AirdropManager configuration.
 
 ## Permissions
-All permissions are the same as the command names. Here are additional permissions:
 ```xml
-<!-- Allows the player to specify spawn and speed. -->
+<!-- Recommended for all players -->
+<Permission Cooldown="0">whenairdrop</Permission>
+
+<!-- For VIP players. Remember to set cooldowns -->
+<Permission Cooldown="3600">airdrop</Permission>
+<Permission Cooldown="3600">airdrophere</Permission>
+<Permission Cooldown="3600">massairdrop</Permission>
+
+<!-- Allows the player to specify spawn and speed -->
 <Permission Cooldown="0">airdrop.full</Permission>
-<!-- Allows the player to specify airdrop and speed. -->
+<!-- Allows the player to specify airdrop and speed -->
 <Permission Cooldown="0">airdrophere.full</Permission>
-<!-- Allows the player to specify speed. -->
+<!-- Allows the player to specify speed -->
 <Permission Cooldown="0">massairdrop.full</Permission>
+
+<!-- For admins -->
+<Permission Cooldown="0">setairdropspawn</Permission>
 ```
 
-## FAQ
-### How to use airdrop grenades?
+## Airdrop Grenades
+You can turn any grenade into an airdrop grenade by adding the `<Grenade />` tag to the airdrop configuration. When a player throws the grenade, an airdrop will be called at position of the grenade.
+
 In `Airdrops.{Map}.xml` file add `<Grenade />` tag, like so:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <AirdropsConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Airdrops>
     <Airdrop Id="541" Name="Washington_Carepackage_America">
-      <Grenade Id="263" Name="Green Smoke"  />
+      <Grenade Id="263" Name="Green Smoke" />
       <Items>
         <Item Id="123" Name="Ranger Magazine" Weight="150" />
         <Item Id="1449" Name="Scalar Magazine" Weight="100" />
         ...
 
 ```
-### How to change the size of storage of one specific airdrop?
-In `Airdrops.{Map}.xml` file add `<Storage />` tag, like so:
+## Airdrop Storage
+You can change the airdrop storage size or even replace a Carepackage (1374) with another barricade.
+
+To change all airdrops, edit the `DefaultAirdropStorageBarricadeId`, `DefaultAirdropStorageWidth`, and `DefaultAirdropStorageHeight` attributes in the configuration file.
+
+To change one specific airdrop, in `Airdrops.{Map}.xml` file add `<Storage />` tag, like so:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <AirdropsConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Airdrops>
     <Airdrop Id="541" Name="Washington_Carepackage_America">
-      <Storage Width="8" Height="10" />
+      <Storage BarricadeId="366" Name="Maple Crate" Width="4" Height="4" />
       <Items>
         <Item Id="123" Name="Ranger Magazine" Weight="150" />
         <Item Id="1449" Name="Scalar Magazine" Weight="100" />
         ...
 ```
-You can also change the barricade id of the storage by adding the `BarricadeId` attribute to the `<Storage />` tag.
-```xml
-<Storage BarricadeId="366" Name="Maple Crate" Width="4" Height="4" />
-```
-### How to change the effect of one specific airdrop?
-In `Airdrops.{Map}.xml` file add `<LandedEffectGuid />` tag, like so:
+
+### Airdrop Effects
+You can replace the default airdrop landed effect (red smoke) with another effect.
+
+To change all airdrops, edit the `DefaultLandedEffectGuid` attribute in the configuration file.
+
+To change one specific airdrop, in `Airdrops.{Map}.xml` file add `<LandedEffectGuid />` tag, like so:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <AirdropsConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -82,7 +98,6 @@ In `Airdrops.{Map}.xml` file add `<LandedEffectGuid />` tag, like so:
 ```
 
 ## Configuration
-### AirdropManager3.configuration.xml
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <AirdropManager3Configuration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -109,6 +124,7 @@ In `Airdrops.{Map}.xml` file add `<LandedEffectGuid />` tag, like so:
 ```
 
 ### Airdrops.Washington.xml
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <AirdropsConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
