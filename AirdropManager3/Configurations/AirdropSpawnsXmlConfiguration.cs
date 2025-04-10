@@ -1,15 +1,12 @@
 ﻿using RestoreMonarchy.AirdropManager3.Helpers;
 using RestoreMonarchy.AirdropManager3.Models;
-using Rocket.Core.Logging;
 using SDG.Unturned;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using UnityEngine;
-using Logger = Rocket.Core.Logging.Logger;
 
 namespace RestoreMonarchy.AirdropManager3.Configurations
 {
@@ -53,26 +50,29 @@ namespace RestoreMonarchy.AirdropManager3.Configurations
 
         private AirdropSpawnsConfiguration Create()
         {
-            IEnumerable<Node> nodes = ReflectionHelper.GetLevelNodesNodes();
-            
-            if (nodes == null)
+            IReadOnlyList<LocationDevkitNode> locationNodes = LocationDevkitNodeSystem.Get().GetAllNodes();
+            List<AirdropDevkitNode> airdropNodes = ReflectionHelper.GetLevelManagerAirdropNodes();
+
+            if (locationNodes == null)
             {
-                throw new Exception("Nodes are null.");
+                locationNodes = [];
             }
 
-            IEnumerable<LocationNode> locationNodes = nodes.OfType<LocationNode>().ToArray();
-            IEnumerable<AirdropNode> airdropNodes = nodes.OfType<AirdropNode>().ToArray();
+            if (airdropNodes == null)
+            {
+                throw new Exception("Airdrop nodes are null. Please check if the level is loaded and airdrop nodes are present.");
+            }
 
             List<AirdropSpawn> airdropSpawns = new();
-            foreach (AirdropNode airdropNode in airdropNodes)
+            foreach (AirdropDevkitNode airdropNode in airdropNodes)
             {
-                Vector3 position = airdropNode.point;
-                LocationNode nearestNode = locationNodes.OrderBy(n => Vector3.Distance(n.point, position)).FirstOrDefault();
+                Vector3 position = airdropNode.transform.position;
+                LocationDevkitNode nearestNode = locationNodes.OrderBy(n => Vector3.Distance(n.transform.position, position)).FirstOrDefault();
 
                 AirdropSpawn airdropSpawn = new()
                 {
                     AirdropId = airdropNode.id,
-                    Name = nearestNode?.name ?? null,
+                    Name = nearestNode?.locationName ?? null,
                     X = position.x,
                     Y = position.y,
                     Z = position.z

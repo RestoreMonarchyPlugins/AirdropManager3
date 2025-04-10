@@ -1,9 +1,6 @@
-﻿using RestoreMonarchy.AirdropManager3.Helpers;
-using RestoreMonarchy.AirdropManager3.Models;
-using Rocket.Core.Logging;
+﻿using RestoreMonarchy.AirdropManager3.Models;
 using SDG.Unturned;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
@@ -111,6 +108,14 @@ namespace RestoreMonarchy.AirdropManager3.Configurations
                 }
             }
 
+            LevelAsset levelAsset = Level.getAsset();
+            AssetReference<AirdropAsset> assetReference = levelAsset != null ? levelAsset.airdropRef : AssetReference<AirdropAsset>.invalid;
+            AirdropAsset airdropAsset = null;
+            if (!assetReference.isNull)
+            {
+                airdropAsset = assetReference.Find();
+            }
+
             List<Airdrop> airdrops = new();
             foreach (ushort spawnId in spawnIds)
             {
@@ -129,6 +134,22 @@ namespace RestoreMonarchy.AirdropManager3.Configurations
                     Name = spawnAsset.name,
                     Items = items
                 };
+
+                if (airdropAsset != null)
+                {
+                    ItemStorageAsset barricade = airdropAsset.barricadeRef.Find() as ItemStorageAsset;
+                    if (barricade != null)
+                    {
+                        airdrop.Storage = new()
+                        {
+                            BarricadeId = barricade.id,
+                            Name = barricade.FriendlyName,
+                            Width = barricade.storage_x,
+                            Height = barricade.storage_y
+                        };
+                    }
+                }
+
                 airdrops.Add(airdrop);
             }
 
