@@ -39,6 +39,17 @@ namespace RestoreMonarchy.AirdropManager3
             Instance = this;
             MessageColor = UnturnedChat.GetColorFromName(Configuration.Instance.MessageColor, Color.green);
 
+            if (Configuration.Instance.Broadcasts != null && Configuration.Instance.Broadcasts.MassAirdropGrenade == null)
+            {
+                Configuration.Instance.Broadcasts.MassAirdropGrenade = new Broadcast()
+                {
+                    Enabled = true,
+                    Message = "[[b]]{player}[[/b]] threw a mass airdrop grenade!"
+                };
+                Configuration.Save();
+                Logger.Log("Added missing MassAirdropGrenade broadcast to configuration.", ConsoleColor.Yellow);
+            }
+
             AirdropsConfiguration = new();
             AirdropSpawnsConfiguration = new();
 
@@ -175,15 +186,24 @@ namespace RestoreMonarchy.AirdropManager3
 
         private void OnThrowableSpawned(UseableThrowable useable, GameObject throwable)
         {
-            Airdrop airdrop = AirdropsConfiguration.Instance.GetAirdropByGrenadeId(useable.equippedThrowableAsset.id);
-            if (airdrop == null)
+            if (Configuration.Instance.EnableMassAirdropGrenade 
+                && Configuration.Instance.MassAirdropGrenade != null 
+                && useable.equippedThrowableAsset.id == Configuration.Instance.MassAirdropGrenade.Id)
             {
+                AirdropGrenadeComponent component = throwable.AddComponent<AirdropGrenadeComponent>();
+                component.Airdrop = null;
+                component.Player = UnturnedPlayer.FromPlayer(useable.player);
                 return;
             }
 
-            AirdropGrenadeComponent component = throwable.AddComponent<AirdropGrenadeComponent>();
-            component.Airdrop = airdrop;
-            component.Player = UnturnedPlayer.FromPlayer(useable.player);
+            Airdrop airdrop = AirdropsConfiguration.Instance.GetAirdropByGrenadeId(useable.equippedThrowableAsset.id);
+            if (airdrop != null)
+            {
+                AirdropGrenadeComponent component = throwable.AddComponent<AirdropGrenadeComponent>();
+                component.Airdrop = airdrop;
+                component.Player = UnturnedPlayer.FromPlayer(useable.player);
+                return;
+            }            
         }
 
         public Airdrop Airdrop(AirdropSpawn airdropSpawn, float speed = 0)

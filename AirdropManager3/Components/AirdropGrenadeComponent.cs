@@ -34,10 +34,28 @@ namespace RestoreMonarchy.AirdropManager3.Components
         void OnDestroy()
         {
             Vector3 position = transform.position;
-            pluginInstance.Airdrop(Airdrop, position, $"{Player.DisplayName} airdrop grenade");
 
-            Broadcast broadcast = pluginInstance.Configuration.Instance.Broadcasts.AirdropGrenade;
-            pluginInstance.SendBroadcastMessage(broadcast, Airdrop, null, Player, position);
+            if (Airdrop != null)
+            {
+                pluginInstance.Airdrop(Airdrop, position, $"{Player.DisplayName} airdrop grenade");
+
+                Broadcast broadcast = pluginInstance.Configuration.Instance.Broadcasts.AirdropGrenade;
+                pluginInstance.SendBroadcastMessage(broadcast, Airdrop, null, Player, position);
+            } else
+            {
+                int count = 0;
+                pluginInstance.DisableInfoLog = true;
+                foreach (AirdropSpawn airdropSpawn in pluginInstance.AirdropSpawnsConfiguration.Instance.AirdropSpawns)
+                {
+                    pluginInstance.Airdrop(airdropSpawn);
+                    count++;
+                }
+                pluginInstance.DisableInfoLog = false;
+                pluginInstance.LogInfo($"Mass airdrop called in by {Player.DisplayName} with airdrop grenade. {count} airdrops incoming!");
+
+                Broadcast broadcast = pluginInstance.Configuration.Instance.Broadcasts.MassAirdropGrenade;
+                pluginInstance.SendBroadcastMessage(broadcast, null, null, Player, default);
+            }                
         }
     }
 }

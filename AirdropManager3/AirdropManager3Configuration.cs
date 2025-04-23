@@ -21,6 +21,14 @@ namespace RestoreMonarchy.AirdropManager3
 
         public Broadcasts Broadcasts { get; set; }
 
+        public bool EnableMassAirdropGrenade { get; set; } = false;
+        public AirdropGrenade MassAirdropGrenade { get; set; } = new()
+        {
+            Id = 263,
+            Name = "Green Smoke"
+        };
+
+        
         public void LoadDefaults()
         {
             Debug = false;
@@ -45,7 +53,15 @@ namespace RestoreMonarchy.AirdropManager3
                 MassAirdropCommand = new() { Enabled = true, Message = "[[b]]Mass airdrop is on the way![[/b]]" },
                 AirdropGrenade = new() { Enabled = true, Message = "[[b]]{player}[[/b]] threw an airdrop grenade!" },
                 AirdropInterval = new() { Enabled = true, Message = "Airdrop is on the way to [[b]]{spawn}![[/b]]" },
-                AirdropIntervalMinPlayers = new() { Enabled = true, Message = "Airdrop skipped: less than [[b]]{min_players}[[/b]] players online." }
+                AirdropIntervalMinPlayers = new() { Enabled = true, Message = "Airdrop skipped: less than [[b]]{min_players}[[/b]] players online." },
+                MassAirdropGrenade = new() { Enabled = true, Message = "[[b]]{player}[[/b]] threw a mass airdrop grenade!" }
+            };
+
+            EnableMassAirdropGrenade = false;
+            MassAirdropGrenade = new()
+            {
+                Id = 263,
+                Name = "Green Smoke"
             };
         }
 

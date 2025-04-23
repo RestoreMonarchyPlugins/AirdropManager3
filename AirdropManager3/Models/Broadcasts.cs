@@ -14,5 +14,6 @@ namespace RestoreMonarchy.AirdropManager3.Models
         public Broadcast AirdropGrenade { get; set; }
         public Broadcast AirdropInterval { get; set; }
         public Broadcast AirdropIntervalMinPlayers { get; set; }
+        public Broadcast MassAirdropGrenade { get; set; }
     }
 }

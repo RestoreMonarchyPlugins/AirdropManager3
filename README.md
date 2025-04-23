@@ -119,7 +119,10 @@ To change one specific airdrop, in `Airdrops.{Map}.xml` file add `<LandedEffectG
     <AirdropGrenade Message="[[b]]{player}[[/b]] threw an airdrop grenade!" Enabled="true" />
     <AirdropInterval Message="Airdrop is on the way to [[b]]{spawn}![[/b]]" Enabled="true" />
     <AirdropIntervalMinPlayers Message="Airdrop skipped: less than [[b]]{min_players}[[/b]] players online." Enabled="true" />
+    <MassAirdropGrenade Message="[[b]]{player}[[/b]] threw a mass airdrop grenade!" Enabled="true" />
   </Broadcasts>
+  <EnableMassAirdropGrenade>false</EnableMassAirdropGrenade>
+  <MassAirdropGrenade Id="263" Name="Green Smoke" />
 </AirdropManager3Configuration>
 ```
 
