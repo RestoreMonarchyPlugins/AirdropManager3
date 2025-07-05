@@ -19,7 +19,7 @@ namespace RestoreMonarchy.AirdropManager3.Patches
                 return true;
             }
 
-            Airdrop airdrop = pluginInstance.AirdropsConfiguration.Instance.GetAirdropById(__instance.id);
+            Airdrop airdrop = pluginInstance.AirdropsConfiguration.Instance.GetAirdropById(__instance.cargoSpawnTable.id);
             if (airdrop == null)
             {
                 return true;
@@ -41,6 +41,7 @@ namespace RestoreMonarchy.AirdropManager3.Patches
             Vector3 position = __instance.transform.position;
 
             ushort barricadeId = pluginInstance.Configuration.Instance.GetAirdropStorageBarricadeId(airdrop);
+
             ItemBarricadeAsset barricadeAsset = (Assets.find(EAssetType.ITEM, barricadeId) as ItemBarricadeAsset);
 
             if (barricadeAsset == null)
