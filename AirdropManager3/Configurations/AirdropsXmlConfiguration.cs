@@ -102,9 +102,9 @@ namespace RestoreMonarchy.AirdropManager3.Configurations
             List<ushort> spawnIds = new();
             foreach (AirdropDevkitNode airdropNode in airdropNodes)
             {
-                if (!spawnIds.Contains(airdropNode.id))
+                if (!spawnIds.Contains(airdropNode.CargoSpawnTableRef.LegacyId))
                 {
-                    spawnIds.Add(airdropNode.id);
+                    spawnIds.Add(airdropNode.CargoSpawnTableRef.LegacyId);
                 }
             }
 

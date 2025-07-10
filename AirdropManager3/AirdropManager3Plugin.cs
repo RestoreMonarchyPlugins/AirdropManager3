@@ -87,6 +87,11 @@ namespace RestoreMonarchy.AirdropManager3
 
         protected override void Unload()
         {
+            if (OriginalAirdropNodes != null)
+            {
+                ReflectionHelper.SetLevelManagerAirdropNodes(OriginalAirdropNodes);
+            }
+
             Instance = null;
             if (airdropIntervalCoroutine != null)
             {

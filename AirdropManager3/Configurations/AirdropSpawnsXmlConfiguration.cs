@@ -55,6 +55,7 @@ namespace RestoreMonarchy.AirdropManager3.Configurations
 
             if (locationNodes == null)
             {
+                pluginInstance.LogDebug("No location nodes were found.");
                 locationNodes = [];
             }
 
@@ -71,7 +72,7 @@ namespace RestoreMonarchy.AirdropManager3.Configurations
 
                 AirdropSpawn airdropSpawn = new()
                 {
-                    AirdropId = airdropNode.id,
+                    AirdropId = airdropNode.CargoSpawnTableRef.LegacyId,
                     Name = nearestNode?.locationName ?? null,
                     X = position.x,
                     Y = position.y,
