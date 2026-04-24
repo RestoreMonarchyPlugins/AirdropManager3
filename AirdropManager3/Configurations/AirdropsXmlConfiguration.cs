@@ -33,6 +33,57 @@ namespace RestoreMonarchy.AirdropManager3.Configurations
                 Save();
                 pluginInstance.LogInfo($"Generated {fileName} with {Instance.Airdrops.Count} airdrops.");
             }
+
+            Validate();
+        }
+
+        private void Validate()
+        {
+            if (Instance?.Airdrops == null)
+            {
+                return;
+            }
+
+            foreach (Airdrop airdrop in Instance.Airdrops)
+            {
+                if (airdrop.Items != null && airdrop.Items.Count > 0)
+                {
+                    List<ushort> invalidItemIds = new();
+                    airdrop.Items.RemoveAll(item =>
+                    {
+                        if (Assets.find(EAssetType.ITEM, item.Id) is not ItemAsset)
+                        {
+                            invalidItemIds.Add(item.Id);
+                            return true;
+                        }
+                        return false;
+                    });
+
+                    if (invalidItemIds.Count > 0)
+                    {
+                        pluginInstance.LogWarning($"Airdrop '{airdrop.DisplayName()}': removed {invalidItemIds.Count} item(s) with unresolved IDs: {string.Join(", ", invalidItemIds)}. Check that the workshop mods providing these items are loaded correctly.");
+                    }
+                }
+
+                if (airdrop.Grenade != null && airdrop.Grenade.Id != 0
+                    && Assets.find(EAssetType.ITEM, airdrop.Grenade.Id) is not ItemAsset)
+                {
+                    pluginInstance.LogWarning($"Airdrop '{airdrop.DisplayName()}': grenade ID {airdrop.Grenade.Id} doesn't resolve to a valid item. Grenade binding disabled for this airdrop.");
+                    airdrop.Grenade = null;
+                }
+
+                if (airdrop.Storage != null && airdrop.Storage.BarricadeId != 0
+                    && Assets.find(EAssetType.ITEM, airdrop.Storage.BarricadeId) is not ItemBarricadeAsset)
+                {
+                    pluginInstance.LogWarning($"Airdrop '{airdrop.DisplayName()}': storage barricade ID {airdrop.Storage.BarricadeId} doesn't resolve to a valid barricade. Falling back to default storage.");
+                    airdrop.Storage.BarricadeId = 0;
+                }
+
+                if (airdrop.Items == null || airdrop.Items.Count == 0)
+                {
+                    pluginInstance.LogError($"Airdrop '{airdrop.DisplayName()}' has no valid items. Airdrops of this type will spawn empty.");
+                }
+            }
         }
 
         public void Save()

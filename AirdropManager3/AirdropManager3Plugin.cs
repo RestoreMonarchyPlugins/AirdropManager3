@@ -163,6 +163,11 @@ namespace RestoreMonarchy.AirdropManager3
             Logger.Log($"Error >> {message}", ConsoleColor.Red);
         }
 
+        internal void LogWarning(string message)
+        {
+            Logger.Log($"Warning >> {message}", ConsoleColor.Yellow);
+        }
+
         internal bool DisableInfoLog { get; set; }
 
         internal void LogInfo(string message)
